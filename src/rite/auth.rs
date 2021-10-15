@@ -47,7 +47,6 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
     let client = &state.gh_client;
     let tera = state.tera.clone();
     let query: AuthRequestQuery = req.query()?;
-    println!("45 {} {}", query.code, query.state);
     let code = AuthorizationCode::new(query.code);
     let token_res = client.exchange_code(code).request(http_client);
     match token_res {
