@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/res/style.css">
+    <title> Rite - {{ section }} </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <h1> rite cloud - {{ section }} </h1>
+
+    <nav>
+        <ul>
+            <li>
+                {% if username %}
+                <a href="/auth/logout" title="click to logout">logged in as {{ username }} (click to logout)</a>
+                {% else %}
+                <a href="/auth/github">login with GitHub</a>
+                {% endif %}
+
+                {% if username %}
+                    <li><a href="/clients/link">link a client</a></li>
+                    <li><a href="/clients/view">view linked clients</a></li>
+                    <li><a href="/documents/view">view documents</a></li>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+
+    <div id="content">{% block content %}{% endblock content %}</div>
+
+</body>
+
+</html>

@@ -1,0 +1,147 @@
+html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+body {
+    max-width: 80ch;
+    font-family: "Courier Prime", monospace;
+    width: 100%;
+    margin-top: 5rem;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+h2 {
+    font-size: 1.7rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+}
+
+h5 {
+    font-size: 1rem;
+}
+
+h6 {
+    font-size: 0.7rem;
+}
+
+blockquote {
+    margin-left: 2rem;
+    padding: 0.1rem;
+    padding-left: 1rem;
+    border-left: 0.2rem solid rgb(207, 207, 207);
+}
+
+blockquote p {
+    margin: 0.1rem;
+}
+
+pre {
+    background-color: #eeeeee;
+    padding: 0.5rem;
+    margin-left: 1.2rem;
+    border-radius: 0.25em;
+    overflow-x: scroll;
+    font-size: 1rem;
+}
+
+a:visited {
+    color: #235aff;
+}
+
+a {
+    color: #235aff;
+    transition-duration: 0.2s;
+}
+
+a:active {
+    color: navy;
+}
+
+
+pre>code {
+    background: inherit;
+}
+
+code {
+    background: #ededed;
+    padding: 0.2rem;
+    border-radius: 0.2rem;
+}
+
+.img-wrapper {
+    width: 100%;
+    text-align: center;
+}
+
+.img-wrapper>img {
+    max-height: 60vh;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+@media not all and (hover: none) {
+    a:hover {
+        color: #2049c7;
+    }
+    a:visited:hover {
+        color: #2049c7;
+    }
+}
+
+@media screen and (max-aspect-ratio: 1/1) {
+    body {
+        width: 90vw;
+        line-height: 1.4;
+    }
+    pre {
+        margin: 0.1rem;
+    }
+    .img-wrapper>img {
+        max-height: unset;
+        height: auto;
+        max-width: 90vw;
+        max-height: 60vh;
+        padding: auto;
+    }
+}
+
+
+@media only screen and (prefers-color-scheme: dark) {
+    body {
+        background: #202020;
+        color: #f5f4f0;
+    }
+    pre {
+        background: #505050;
+    }
+    a, a:visited {
+        color: #4a8bf3;
+    }
+    span[class^='cyb-meta'] {
+        color: #ccc;
+    }
+    code {
+        background: #404040;
+    }
+    @media not all and (hover: none) {
+        a:hover, a:visited:hover {
+            filter: brightness(2);
+        }
+    }
+}
