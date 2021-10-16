@@ -6,7 +6,7 @@ pub struct OauthConfig {
     pub app_url: String,
     pub tide_secret: String,
     pub redirect_url: String,
-    pub token_url: String,
+    pub token_url: String
 }
 
 impl OauthConfig {
