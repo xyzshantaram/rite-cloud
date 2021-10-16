@@ -12,6 +12,7 @@ body {
     font-family: "Courier Prime", monospace;
     width: 100%;
     margin-top: 5rem;
+    line-height: 1.6;
 }
 
 h1 {
@@ -56,7 +57,7 @@ pre {
     padding: 0.5rem;
     margin-left: 1.2rem;
     border-radius: 0.25em;
-    overflow-x: scroll;
+    overflow-x: auto;
     font-size: 1rem;
 }
 
@@ -144,4 +145,29 @@ code {
             filter: brightness(2);
         }
     }
+}
+
+::-webkit-scrollbar-thumb {
+    color: #202020;
+}
+
+::-webkit-scrollbar-track {
+    color: transparent;
+}
+
+.add-client {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form > input {
+    margin: 0.4rem;
 }
