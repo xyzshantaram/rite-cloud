@@ -1,5 +1,26 @@
 {% extends "base.html" %}
-{% block page %} Link a client {% endblock page %}
 {% block content %}
+<p>
+    To link a client, set the cloud_token setting in your rite client to the following:
+</p>
+<details>
+    <summary>Click to view code</summary>
+    <pre><code>{{ code }}</code></pre>
+</details>
 
+<p>This code won't be displayed again - copy it now!
+    Make sure to keep it secret, as anyone with the code can upload and view your documents.
+</p>
+
+<p>
+    Next, enter a nickname for this client, and click Submit when you're done to finish linking this client.
+</p>
+<div class='add-client'>
+    <form method="post" action="/clients/link">
+        <input type="hidden" name="code" value="{{ code }}">
+        <input type="text" name="nickname" required>
+        <input type="submit">
+    </form>
+</div>
+</p>
 {% endblock content %}

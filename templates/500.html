@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block content %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rite - Home</title>
-</head>
+<h3>error: {{ msg }}</h3>
+<p>{{ details }}</p>
 
-<body>
-    <h1>{{ msg }}</h1>
-
-    <code>{{ details }}</code>
-</body>
-
-</html>
+{% endblock content %}
