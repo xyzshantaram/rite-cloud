@@ -45,21 +45,28 @@ async fn main() -> tide::Result<()> {
     app.with(tide::log::LogMiddleware::new());
     app.with(build_session_middleware(session_db, &cfg.tide_secret).await?);
 
-    // tide::log::start();
+    if let Ok(_) = std::env::var("RITE_LOG") {
+        tide::log::start();
+    }
 
     app.at("/res").serve_dir("res")?;
     app.at("/").get(routes::homepage);
 
-    app.at("/auth/github").get(auth::gh);
-    app.at("/auth/logout").get(logout);
-    app.at("/auth/github/authorized").get(auth::gh_authorized);
+    let auth = {
+        let mut app = tide::with_state(state.clone());
+        app.at("/github").get(auth::gh);
+        app.at("/github/authorized").get(auth::gh_authorized);
 
+        app.at("/logout").get(logout);
+        app
+    };
     let clients = {
         let mut app = tide::with_state(state.clone());
         app.with(LoginMiddleware::new());
 
         app.at("/link").get(routes::link_client_get);
         app.at("/view").get(routes::view_clients);
+        app.at("/delete/:uuid").get(routes::delete_client);
 
         app.at("/link").post(routes::link_client_post);
 
@@ -76,6 +83,7 @@ async fn main() -> tide::Result<()> {
 
     app.at("/clients").nest(clients);
     app.at("/docs").nest(docs);
+    app.at("/auth").nest(auth);
 
     app.listen(cfg.app_url).await?;
     Ok(())
@@ -104,6 +112,7 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         "
     CREATE TABLE IF NOT EXISTS clients (
         uuid TEXT UNIQUE,
+        token TEXT,
         user TEXT,
         nickname TEXT,
         added_on DATE
@@ -115,7 +124,7 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
     sqlx::query(
         "
     CREATE TABLE IF NOT EXISTS pending_clients (
-        uuid TEXT UNIQUE,
+        token TEXT UNIQUE,
         user TEXT,
         added_on DATE
     )",
