@@ -61,11 +61,7 @@ pre {
     font-size: 1rem;
 }
 
-a:visited {
-    color: #235aff;
-}
-
-a {
+a, a:link, a:visited {
     color: #235aff;
     transition-duration: 0.2s;
 }
@@ -96,15 +92,6 @@ code {
     object-fit: contain;
 }
 
-@media not all and (hover: none) {
-    a:hover {
-        color: #2049c7;
-    }
-    a:visited:hover {
-        color: #2049c7;
-    }
-}
-
 @media screen and (max-aspect-ratio: 1/1) {
     body {
         width: 90vw;
@@ -119,31 +106,6 @@ code {
         max-width: 90vw;
         max-height: 60vh;
         padding: auto;
-    }
-}
-
-
-@media only screen and (prefers-color-scheme: dark) {
-    body {
-        background: #202020;
-        color: #f5f4f0;
-    }
-    pre {
-        background: #505050;
-    }
-    a, a:visited {
-        color: #4a8bf3;
-    }
-    span[class^='cyb-meta'] {
-        color: #ccc;
-    }
-    code {
-        background: #404040;
-    }
-    @media not all and (hover: none) {
-        a:hover, a:visited:hover {
-            filter: brightness(2);
-        }
     }
 }
 
@@ -166,8 +128,80 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 1rem;
 }
 
 form > input {
     margin: 0.4rem;
+    border-radius: 0.2rem;
+    background: inherit;
+    color: inherit;
+    border: 2px solid #aaaaaa;
+    padding: 0.4rem;
+}
+
+form > input:focus:not(:hover) {
+    border-color: #555555;
+    outline: none;
+}
+
+form > input[type=submit] {
+    cursor: pointer;
+}
+
+form > input[type=submit]:active:not(:hover) {
+    border-color: #555555;
+}
+
+.client-title {
+    font-size: 1.4rem;
+}
+
+@media not all and (hover: none) {
+    a:hover {
+        color: #2049c7;
+    }
+    a:visited:hover {
+        color: #2049c7;
+    }
+    input[type='text']:hover, input[type='submit']:hover {
+        border-color: gray;
+    }
+}
+
+
+
+@media only screen and (prefers-color-scheme: dark) {
+    body {
+        background: #202020;
+        color: #f5f4f0;
+    }
+    pre {
+        background: #505050;
+    }
+    a, a:visited {
+        color: #4a8bf3;
+    }
+    span[class^='cyb-meta'] {
+        color: #ccc;
+    }
+    code {
+        background: #404040;
+    }
+
+    form > input {
+        border-color: gray;
+    }
+
+    form > input:focus:not(:hover) {
+        border-color: #f5f4f0;
+    }
+    
+    form > input[type=submit]:active:not(:hover) {
+        border-color: #f5f4f0;
+    }
+
+    input[type='text']:hover, input[type='submit']:hover {
+        border-color: #aaaaaa;
+    }
 }

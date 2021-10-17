@@ -4,12 +4,12 @@
     To link a client, set the cloud_token setting in your rite client to the following:
 </p>
 <details>
-    <summary>Click to view code</summary>
-    <pre><code>{{ code }}</code></pre>
+    <summary>Click to view token</summary>
+    <pre><code>{{ token }}</code></pre>
 </details>
 
-<p>This code won't be displayed again - copy it now!
-    Make sure to keep it secret, as anyone with the code can upload and view your documents.
+<p>This token won't be displayed again - copy it now!
+    Make sure to keep it secret, as anyone with this token can view and edit your documents or upload new ones.
 </p>
 
 <p>
@@ -22,8 +22,9 @@
 </p>
 <div class='add-client'>
     <form method="post" action="/clients/link">
-        <input type="hidden" name="code" value="{{ code }}">
-        <input type="text" name="nickname"
+        <input type="hidden" name="token" value="{{ token }}">
+        <label for="nickname">Choose a nickname: </label>
+        <input id="nickname" type="text" name="nickname"
             title="Must start with an alphabet and only be composed of alphanumeric characters and hyphens."
             pattern="[a-zA-Z][a-zA-Z0-9\-]*" required>
         <input type="submit">
