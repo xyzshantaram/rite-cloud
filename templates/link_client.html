@@ -13,12 +13,19 @@
 </p>
 
 <p>
-    Next, enter a nickname for this client, and click Submit when you're done to finish linking this client.
+    Next, enter a nickname for this client, and click Submit when you're done to finish 
+    linking this client.
+</p>
+
+<p>
+    The nickname must be composed only of alphanumeric characters, and should not start with a number or a hyphen.
 </p>
 <div class='add-client'>
     <form method="post" action="/clients/link">
         <input type="hidden" name="code" value="{{ code }}">
-        <input type="text" name="nickname" required>
+        <input type="text" name="nickname"
+            title="Must start with an alphabet and only be composed of alphanumeric characters and hyphens."
+            pattern="[a-zA-Z][a-zA-Z0-9\-]*" required>
         <input type="submit">
     </form>
 </div>

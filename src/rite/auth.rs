@@ -7,7 +7,6 @@ use oauth2::{
     Scope, TokenResponse, TokenUrl,
 };
 use serde::{Deserialize, Serialize};
-use tide_tera::{context, TideTeraExt};
 
 #[derive(Debug, Deserialize)]
 struct UserInfoResponse {
@@ -22,12 +21,13 @@ struct AuthRequestQuery {
     state: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 struct GhResponse {
     login: String,
 }
 
 use super::OauthConfig;
+use crate::rite::server_error;
 use crate::State;
 use tide::{Redirect, Request};
 
@@ -57,22 +57,31 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                 .recv_json::<GhResponse>()
                 .await?;
             let session = req.session_mut();
-            session.insert("username", res.login)?;
-            return Ok(Redirect::new("/").into());
+            match session.insert("username", &res.login) {
+                Ok(_) => {
+                    tide::log::info!("User authorised, redirecting...");
+                    Ok(Redirect::new("/").into())
+                }
+                Err(e) => {
+                    server_error(tera, "Could not log in", &format!("error saving session: {:?}", e))
+                }
+            }
         }
         Err(RequestTokenError::Parse(_, bytes)) => {
-            return tera.render_response("500.html", &context! {
-                "msg" => "Expired or invalid response",
-                "details" => format!("error text: {}", string::String::from_utf8(bytes).unwrap_or_default())
-            });
+            return server_error(
+                tera,
+                "Expired or invalid code",
+                &format!(
+                    "error text: {}",
+                    string::String::from_utf8(bytes).unwrap_or_default()
+                ),
+            );
         }
         Err(otherwise) => {
-            return tera.render_response(
-                "500.html",
-                &context! {
-                    "msg" => "Error while getting access token",
-                    "details" => format!("{:?}", otherwise)
-                },
+            return server_error(
+                tera,
+                "Error while getting access token",
+                &format!("{:?}", otherwise),
             );
         }
     }
