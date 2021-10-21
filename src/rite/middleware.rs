@@ -35,9 +35,9 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for WebAuthCheck {
 }
 
 #[derive(Debug, Default, Clone)]
-pub struct ClientAuthCheck;
+pub struct DocPrelimChecks;
 
-impl ClientAuthCheck {
+impl DocPrelimChecks {
     #[must_use]
     pub const fn new() -> Self {
         Self
@@ -51,6 +51,14 @@ impl ClientAuthCheck {
         let mut db = state.rite_db.clone().acquire().await?;
         let mut res = Response::new(StatusCode::Ok);
         res.set_content_type(mime::JSON);
+
+        if body_bytes.len() > req.state().cfg.file_limit {
+            res.set_status(StatusCode::UnprocessableEntity);
+            res.set_body(json!({
+                "message": "Request too large."
+            }));
+            return Ok(res);
+        }
 
         let doc = sqlx::query("select * from clients where token is ? and user is ?;")
             .bind(body.token)
@@ -72,7 +80,7 @@ impl ClientAuthCheck {
 }
 
 #[tide::utils::async_trait]
-impl Middleware<State> for ClientAuthCheck {
+impl Middleware<State> for DocPrelimChecks {
     async fn handle(&self, req: tide::Request<State>, next: Next<'_, State>) -> tide::Result {
         self.check_and_respond(req, next).await
     }
