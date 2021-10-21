@@ -1,5 +1,6 @@
 use std::string;
 
+use http_types::{StatusCode};
 use oauth2::basic::BasicClient;
 use oauth2::curl::http_client;
 use oauth2::{
@@ -62,19 +63,23 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                     tide::log::info!("User authorised, redirecting...");
                     Ok(Redirect::new("/").into())
                 }
-                Err(e) => {
-                    server_error(tera, "Could not log in", &format!("error saving session: {:?}", e))
-                }
+                Err(e) => server_error(
+                    tera,
+                    "Could not log in",
+                    &format!("error saving session: {:?}", e),
+                    StatusCode::InternalServerError,
+                ),
             }
         }
         Err(RequestTokenError::Parse(_, bytes)) => {
             return server_error(
                 tera,
-                "Expired or invalid code",
+                "Expired or invalid code while trying to log in",
                 &format!(
                     "error text: {}",
                     string::String::from_utf8(bytes).unwrap_or_default()
                 ),
+                StatusCode::Conflict,
             );
         }
         Err(otherwise) => {
@@ -82,6 +87,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                 tera,
                 "Error while getting access token",
                 &format!("{:?}", otherwise),
+                StatusCode::InternalServerError,
             );
         }
     }

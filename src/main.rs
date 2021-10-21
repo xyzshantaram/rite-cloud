@@ -6,13 +6,13 @@ use async_sqlx_session::SqliteSessionStore;
 use http_types::cookies::SameSite;
 use rite::{
     auth::{self, logout},
-    middleware::LoginMiddleware,
+    middleware::{ClientAuthCheck, WebAuthCheck},
     oauth_config::OauthConfig,
     routes, State,
 };
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
 use tera::Tera;
-use tide::sessions::{SessionMiddleware};
+use tide::sessions::SessionMiddleware;
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
@@ -62,22 +62,34 @@ async fn main() -> tide::Result<()> {
     };
     let clients = {
         let mut app = tide::with_state(state.clone());
-        app.with(LoginMiddleware::new());
+        app.with(WebAuthCheck::new());
 
-        app.at("/link").get(routes::link_client_get);
-        app.at("/view").get(routes::view_clients);
-        app.at("/delete/:uuid").get(routes::delete_client);
+        app.at("/link").get(routes::clients::link_get);
+        app.at("/view").get(routes::clients::view);
+        app.at("/delete/:uuid").get(routes::clients::delete);
 
-        app.at("/link").post(routes::link_client_post);
+        app.at("/link").post(routes::clients::link_post);
 
         app
     };
 
     let docs = {
         let mut app = tide::with_state(state);
-        app.with(LoginMiddleware::new());
 
-        app.at("/docs/upload").post(routes::doc_upload);
+        app.at("/view/:name/:revision").get(routes::docs::view);
+        app.at("/clist")
+            .with(ClientAuthCheck::new())
+            .get(routes::docs::clist);
+        app.at("/list")
+            .with(WebAuthCheck::new())
+            .get(routes::docs::list);
+        app.at("/delete")
+            .with(WebAuthCheck::new())
+            .get(routes::docs::delete);
+
+        app.at("/upload")
+            .with(ClientAuthCheck::new())
+            .post(routes::docs::upload);
         app
     };
 
@@ -135,8 +147,23 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
     sqlx::query(
         "
     CREATE TABLE IF NOT EXISTS documents (
-        uuid TEXT UNIQUE,
-        name TEXT
+        name TEXT,
+        user TEXT,
+        revision TEXT,
+        contents TEXT,
+        visibility BOOLEAN
+    )",
+    )
+    .execute(&mut db.acquire().await?)
+    .await?;
+
+    sqlx::query(
+        "
+    CREATE TABLE IF NOT EXISTS revisions (
+        document TEXT,
+        name TEXT,
+        user TEXT,
+        contents TEXT
     )",
     )
     .execute(&mut db.acquire().await?)

@@ -2554,12 +2554,14 @@ dependencies = [
 name = "rite-cloud"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-sqlx-session",
  "async-std",
  "http-types",
  "hyper-native-tls",
  "oauth2",
  "serde",
+ "serde_json",
  "sqlx",
  "surf",
  "tera",

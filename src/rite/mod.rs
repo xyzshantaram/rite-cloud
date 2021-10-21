@@ -1,13 +1,14 @@
-use oauth2::{basic::BasicClient};
+use http_types::StatusCode;
+use oauth2::basic::BasicClient;
 
-pub mod oauth_config;
 pub mod auth;
-pub mod routes;
 pub mod middleware;
+pub mod oauth_config;
+pub mod routes;
 
 use oauth_config::OauthConfig;
-use sqlx::{FromRow, Row, SqlitePool, sqlite::SqliteRow, types::chrono::NaiveDateTime};
-use tide_tera::{TideTeraExt, context};
+use sqlx::{sqlite::SqliteRow, types::chrono::NaiveDateTime, FromRow, Row, SqlitePool};
+use tide_tera::{context, TideTeraExt};
 
 #[derive(Clone, Debug)]
 pub struct State {
@@ -15,21 +16,13 @@ pub struct State {
     pub cfg: OauthConfig,
     pub tera: tera::Tera,
     pub session_db: SqlitePool,
-    pub rite_db: SqlitePool
-}
-
-#[derive(Clone, Debug, serde::Deserialize)]
-pub struct UploadRequest {
-    pub doc: String,
-    pub name: String,
-    pub revision: String,
-    pub token: String
+    pub rite_db: SqlitePool,
 }
 
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct LinkRequest {
     pub nickname: String,
-    pub token: String
+    pub token: String,
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
@@ -37,7 +30,7 @@ pub struct Client {
     pub added_on: String,
     pub user: String,
     pub nickname: String,
-    pub uuid: String
+    pub uuid: String,
 }
 
 impl FromRow<'_, SqliteRow> for Client {
@@ -51,13 +44,16 @@ impl FromRow<'_, SqliteRow> for Client {
     }
 }
 
-pub fn server_error(tera: tera::Tera, title: &str, msg: &str) -> tide::Result {
-    Ok(tera.render_response(
+pub fn server_error(tera: tera::Tera, title: &str, msg: &str, status: StatusCode) -> tide::Result {
+    let mut res = tera.render_response(
         "500.html",
         &context! {
             "section" => "error",
             "msg" => title,
             "details" => msg
         },
-    )?)
+    )?;
+    res.set_status(status);
+
+    Ok(res)
 }
