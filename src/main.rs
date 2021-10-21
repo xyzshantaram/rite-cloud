@@ -13,6 +13,7 @@ use rite::{
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
 use tera::Tera;
 use tide::sessions::SessionMiddleware;
+use tide_governor::GovernorMiddleware;
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
@@ -83,13 +84,21 @@ async fn main() -> tide::Result<()> {
         app.at("/list")
             .with(WebAuthCheck::new())
             .get(routes::docs::list);
+
+        app.at("/delete/:name/:revision")
+            .with(WebAuthCheck::new())
+            .get(routes::docs::delete);
+        app.at("/delete/:name")
+            .with(WebAuthCheck::new())
+            .get(routes::docs::delete);
         app.at("/delete")
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);
 
-        app.at("/upload")
+        app.at("/upload").with(GovernorMiddleware::per_minute(2)?)
             .with(ClientAuthCheck::new())
             .post(routes::docs::upload);
+        
         app
     };
 
