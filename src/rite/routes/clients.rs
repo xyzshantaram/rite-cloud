@@ -2,7 +2,7 @@ use http_types::StatusCode;
 use tide::{Redirect, Request};
 use tide_tera::{TideTeraExt, context};
 use uuid::Uuid;
-use sqlx::{types::chrono::NaiveDateTime, Row, Sqlite};
+use sqlx::{Row, Sqlite};
 use tera::Context;
 
 use crate::rite::{Client, LinkRequest, State, server_error};
@@ -96,15 +96,11 @@ pub async fn link_post(mut req: Request<State>) -> tide::Result {
         .bind(username)
         .fetch_optional(&mut conn)
         .await?;
-
-    let dt: NaiveDateTime;
     let token: String;
     let user: String;
     if let Some(val) = result {
-        dt = val.try_get("added_on")?;
         token = val.try_get("token")?;
         user = val.try_get("user")?;
-        println!("{}, {}, {}", dt, token, user);
     } else {
         return server_error(
             tera,
@@ -140,28 +136,22 @@ pub async fn view(req: Request<State>) -> tide::Result {
     let mut context = context! {
         "section" => "view clients"
     };
-    let username: String;
     if let Some(val) = session.get::<String>("username") {
-        username = val.clone();
         context.try_insert("username", &val)?;
-    } else {
-        return server_error(
-            tera,
-            "Unknown error",
-            "Username was None trying to read session",
-            StatusCode::InternalServerError
-        );
+        let username = val;
+        let mut db = req.state().rite_db.clone().acquire().await?;
+
+        let rows: Vec<Client> = sqlx::query_as::<Sqlite, Client>(
+            "SELECT uuid, user, nickname, added_on from clients where user = ?;",
+        )
+        .bind(username)
+        .fetch_all(&mut db)
+        .await?;
+    
+        context.try_insert("rows", &rows)?;
+        tera.render_response("view_clients.html", &context)
     }
-    let mut db = req.state().rite_db.clone().acquire().await?;
-
-    let rows: Vec<Client> = sqlx::query_as::<Sqlite, Client>(
-        "SELECT uuid, user, nickname, added_on from clients where user = ?;",
-    )
-    .bind(username)
-    .fetch_all(&mut db)
-    .await?;
-
-    context.try_insert("rows", &rows)?;
-
-    tera.render_response("view_clients.html", &context)
+    else {
+        server_error(tera, "Unknown error.", "", StatusCode::InternalServerError)
+    }
 }
