@@ -138,11 +138,12 @@ form > input {
     color: inherit;
     border: 2px solid #aaaaaa;
     padding: 0.4rem;
+    font-family: inherit;
+    outline: none;
 }
 
 form > input:focus:not(:hover) {
     border-color: #555555;
-    outline: none;
 }
 
 form > input[type=submit] {
@@ -151,6 +152,11 @@ form > input[type=submit] {
 
 form > input[type=submit]:active:not(:hover) {
     border-color: #555555;
+}
+
+details > summary {
+    text-decoration: underline;
+    font-weight: bold;
 }
 
 .client-title {
