@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block page %} View documents {% endblock page %}
+{% block content %}
+{% if docs and docs | length > 0 %}
+<h2>Your documents</h2>
+<ul>
+    {% for name, revisions in docs | group_by(attribute="name") %}
+    <li>
+        <strong>{{ name }}</strong>
+        {% for revision in revisions %}
+        <ul>
+            <li>
+                Revision <strong>{{ revision.revision }}</strong>
+                <div>
+                    Visibility: <strong> {% if revision.public %} Public {% else %} Hidden {% endif %} </strong>
+                </div>
+                <div>
+                    <a href="/docs/view/{{ name | urlencode_strict }}/{{ revision.revision | urlencode_strict }}">View
+                        online</a>
+
+                    <a class='delete'
+                        href="/docs/delete/{{ name | urlencode_strict }}/{{ revision.revision | urlencode_strict }}">Delete</a>
+                </div>
+            </li>
+        </ul>
+
+        {% endfor %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>You haven't uploaded any documents yet.
+<p>
+<p>Use the "Upload to Rite Cloud" setting in your Rite client to upload a document.</p>
+{% endif %}
+{% endblock content %}

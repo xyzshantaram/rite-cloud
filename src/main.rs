@@ -6,8 +6,8 @@ use async_sqlx_session::SqliteSessionStore;
 use http_types::cookies::SameSite;
 use rite::{
     auth::{self, logout},
-    middleware::{ClientAuthCheck, WebAuthCheck},
-    oauth_config::OauthConfig,
+    middleware::{DocPrelimChecks, WebAuthCheck},
+    config::RiteConfig,
     routes, State,
 };
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
@@ -17,7 +17,7 @@ use tide_governor::GovernorMiddleware;
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
-    let mut cfg = OauthConfig::default();
+    let mut cfg = RiteConfig::default();
     if let Err(e) = cfg.fill_from(std::env::var) {
         panic!("Error getting environment variable {}: {}", e.0, e.1);
     }
@@ -79,7 +79,7 @@ async fn main() -> tide::Result<()> {
 
         app.at("/view/:name/:revision").get(routes::docs::view);
         app.at("/clist")
-            .with(ClientAuthCheck::new())
+            .with(DocPrelimChecks::new())
             .get(routes::docs::clist);
         app.at("/list")
             .with(WebAuthCheck::new())
@@ -96,7 +96,7 @@ async fn main() -> tide::Result<()> {
             .get(routes::docs::delete);
 
         app.at("/upload").with(GovernorMiddleware::per_minute(2)?)
-            .with(ClientAuthCheck::new())
+            .with(DocPrelimChecks::new())
             .post(routes::docs::upload);
         
         app
@@ -136,7 +136,7 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         token TEXT,
         user TEXT,
         nickname TEXT,
-        added_on DATE
+        added_on DATETIME
     )",
     )
     .execute(&mut db.acquire().await?)
@@ -147,7 +147,7 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
     CREATE TABLE IF NOT EXISTS pending_clients (
         token TEXT UNIQUE,
         user TEXT,
-        added_on DATE
+        added_on DATETIME
     )",
     )
     .execute(&mut db.acquire().await?)
@@ -160,7 +160,8 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         user TEXT,
         revision TEXT,
         contents TEXT,
-        visibility BOOLEAN
+        public BOOLEAN,
+        added_on DATETIME
     )",
     )
     .execute(&mut db.acquire().await?)

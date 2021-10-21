@@ -3,17 +3,17 @@ use oauth2::basic::BasicClient;
 
 pub mod auth;
 pub mod middleware;
-pub mod oauth_config;
+pub mod config;
 pub mod routes;
 
-use oauth_config::OauthConfig;
+use config::RiteConfig;
 use sqlx::{sqlite::SqliteRow, types::chrono::NaiveDateTime, FromRow, Row, SqlitePool};
 use tide_tera::{context, TideTeraExt};
 
 #[derive(Clone, Debug)]
 pub struct State {
     pub gh_client: BasicClient,
-    pub cfg: OauthConfig,
+    pub cfg: RiteConfig,
     pub tera: tera::Tera,
     pub session_db: SqlitePool,
     pub rite_db: SqlitePool,
@@ -33,6 +33,15 @@ pub struct Client {
     pub uuid: String,
 }
 
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct Document {
+    pub name: String,
+    pub revision: String,
+    pub contents: String,
+    pub user: String,
+    pub public: bool,
+}
+
 impl FromRow<'_, SqliteRow> for Client {
     fn from_row<'r>(row: &'r SqliteRow) -> Result<Self, sqlx::Error> {
         let mut rv = Client::default();
@@ -40,6 +49,18 @@ impl FromRow<'_, SqliteRow> for Client {
         rv.user = row.try_get("user")?;
         rv.nickname = row.try_get("nickname")?;
         rv.uuid = row.try_get("uuid")?;
+        Ok(rv)
+    }
+}
+
+impl FromRow<'_, SqliteRow> for Document {
+    fn from_row<'r>(row: &'r SqliteRow) -> Result<Self, sqlx::Error> {
+        let mut rv = Document::default();
+        rv.name = row.try_get("name")?;
+        rv.contents = row.try_get("contents")?;
+        rv.revision = row.try_get("revision")?;
+        rv.user = row.try_get("user")?;
+        rv.public = if row.try_get("public")? { true } else { false };
         Ok(rv)
     }
 }

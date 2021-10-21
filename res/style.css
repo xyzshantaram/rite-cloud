@@ -211,3 +211,7 @@ details > summary {
         border-color: #aaaaaa;
     }
 }
+
+ul:not(:last-child) {
+    margin-bottom: 1rem;
+}

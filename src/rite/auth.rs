@@ -27,7 +27,7 @@ struct GhResponse {
     login: String,
 }
 
-use super::OauthConfig;
+use super::RiteConfig;
 use crate::rite::server_error;
 use crate::State;
 use tide::{Redirect, Request};
@@ -99,7 +99,7 @@ pub async fn logout(mut req: Request<State>) -> tide::Result {
     Ok(Redirect::new("/").into())
 }
 
-pub fn gh_oauth_client(cfg: &OauthConfig) -> tide::Result<BasicClient> {
+pub fn gh_oauth_client(cfg: &RiteConfig) -> tide::Result<BasicClient> {
     Ok(BasicClient::new(
         ClientId::new(cfg.client_id.clone()),
         Some(ClientSecret::new(cfg.client_secret.clone())),
