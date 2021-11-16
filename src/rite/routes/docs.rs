@@ -64,12 +64,12 @@ pub async fn delete(req: Request<State>) -> tide::Result {
     let username: String = req.session().get("username").unwrap();
     // unwrapping this is ok because we have the login middleware
 
-    let doc_ = req.param("name");
-    if doc_.is_err() {
+    let doc;
+    if let Ok(val) = req.param("name") {
+        doc = decode(val)?.into_owned()
+    } else {
         return render_error(tera, "Bad request.", "", StatusCode::BadRequest);
     }
-
-    let doc = decode(doc_?)?.into_owned();
 
     let revision = if let Ok(rev) = req.param("revision") {
         Some(decode(rev)?.into_owned())
