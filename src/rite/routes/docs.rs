@@ -3,9 +3,10 @@ use crate::{
     State,
 };
 use http_types::{convert::json, mime, StatusCode};
-use sqlx::Sqlite;
-use tide::{Request, Response};
+use sqlx::{query::QueryAs, sqlite::SqliteArguments, Sqlite};
+use tide::{Redirect, Request, Response};
 use tide_tera::{context, TideTeraExt};
+use urlencoding::decode;
 
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct UploadRequest {
@@ -30,6 +31,7 @@ pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
         .await?;
 
     let mut res = Response::new(StatusCode::Ok);
+    res.set_content_type(mime::JSON);
 
     if doc.is_none() {
         let public = if body.public { 1 } else { 0 };
@@ -45,7 +47,6 @@ pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
             "message": "Ok"
         }));
     } else {
-        res.set_content_type(mime::JSON);
         res.set_status(StatusCode::Conflict);
         res.set_body(json!({
             "message": "Duplicate revision."
@@ -55,8 +56,63 @@ pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
     Ok(res)
 }
 
-pub async fn delete(mut req: Request<State>) -> tide::Result {
-    unimplemented!()
+pub async fn delete(req: Request<State>) -> tide::Result {
+    let state = req.state();
+    let tera = state.tera.clone();
+    let mut db = state.rite_db.acquire().await?;
+
+    let username: String = req.session().get("username").unwrap();
+    // unwrapping this is ok because we have the login middleware
+
+    let doc_ = req.param("name");
+    if doc_.is_err() {
+        return render_error(tera, "Bad request.", "", StatusCode::BadRequest);
+    }
+
+    let doc = decode(doc_?)?.into_owned();
+
+    let revision = if let Ok(rev) = req.param("revision") {
+        Some(decode(rev)?.into_owned())
+    } else {
+        None
+    };
+
+    let mut doc_query: QueryAs<Sqlite, Document, SqliteArguments> =
+        sqlx::query_as::<Sqlite, Document>(if revision.is_some() {
+            "select * from documents where user = ? and name = ? and revision = ?;"
+        } else {
+            "select * from documents where user = ? and name = ?;"
+        })
+        .bind(&username)
+        .bind(&doc);
+
+    if let Some(val) = revision.clone() {
+        doc_query = doc_query.bind(val);
+    }
+
+    let doc_exists: Option<Document> = doc_query.fetch_optional(&mut db).await?;
+
+    if doc_exists.is_some() {
+        let mut query = sqlx::query(if revision.is_some() {
+            "delete from documents where user = ? and name = ? and revision = ?;"
+        } else {
+            "delete from documents where user = ? and name = ?;"
+        })
+        .bind(username)
+        .bind(doc);
+        if revision.is_some() {
+            query = query.bind(revision.unwrap());
+        }
+        query.execute(&mut db).await?;
+        Ok(Redirect::new("/docs/list").into())
+    } else {
+        render_error(
+            tera,
+            "Not found.",
+            "The document specified for deletion was not found.",
+            StatusCode::NotFound,
+        )
+    }
 }
 
 pub async fn view(mut req: Request<State>) -> tide::Result {

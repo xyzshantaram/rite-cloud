@@ -23,3 +23,4 @@ async-sqlx-session = { path="./async-sqlx-session", features = ["sqlite", "async
 anyhow = "1.0"
 serde_json = "1.0"
 tide-governor = "1.0"
+urlencoding = "2.1"
