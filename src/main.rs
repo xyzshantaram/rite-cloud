@@ -69,18 +69,14 @@ async fn main() -> tide::Result<()> {
         app.at("/view").get(routes::clients::view);
         app.at("/delete/:uuid").get(routes::clients::delete);
 
-        app.at("/link").post(routes::clients::link_post);
-
         app
     };
 
     let docs = {
-        let mut app = tide::with_state(state);
+        let mut app = tide::with_state(state.clone());
 
         app.at("/view/:name/:revision").get(routes::docs::view);
-        app.at("/clist")
-            .with(DocPrelimChecks::new())
-            .get(routes::docs::clist);
+
         app.at("/list")
             .with(WebAuthCheck::new())
             .get(routes::docs::list);
@@ -95,17 +91,27 @@ async fn main() -> tide::Result<()> {
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);
 
-        app.at("/upload")
+        app
+    };
+
+    let api = {
+        let mut app = tide::with_state(state);
+        app.at("/docs/upload")
             .with(GovernorMiddleware::per_minute(2)?)
             .with(DocPrelimChecks::new())
-            .post(routes::docs::upload);
+            .post(routes::docs::api_upload_doc);
+        app.at("/docs/list")
+            .with(DocPrelimChecks::new())
+            .get(routes::docs::api_list_docs);
 
+        app.at("/link").post(routes::clients::api_link);
         app
     };
 
     app.at("/clients").nest(clients);
     app.at("/docs").nest(docs);
     app.at("/auth").nest(auth);
+    app.at("/api").nest(api);
 
     app.listen(cfg.app_url).await?;
     Ok(())

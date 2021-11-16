@@ -17,7 +17,7 @@ pub struct UploadRequest {
     pub public: bool,
 }
 
-pub async fn upload(mut req: Request<State>) -> tide::Result {
+pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
     let body: UploadRequest = req.body_json().await?;
     let state = req.state();
     let mut db = state.rite_db.acquire().await?;
@@ -63,7 +63,7 @@ pub async fn view(mut req: Request<State>) -> tide::Result {
     unimplemented!()
 }
 
-pub async fn clist(mut req: Request<State>) -> tide::Result {
+pub async fn api_list_docs(mut req: Request<State>) -> tide::Result {
     unimplemented!()
 }
 
