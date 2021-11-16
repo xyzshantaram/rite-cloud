@@ -1,11 +1,11 @@
 use http_types::StatusCode;
-use tide::{Redirect, Request};
-use tide_tera::{TideTeraExt, context};
-use uuid::Uuid;
 use sqlx::{Row, Sqlite};
 use tera::Context;
+use tide::{Redirect, Request};
+use tide_tera::{context, TideTeraExt};
+use uuid::Uuid;
 
-use crate::rite::{Client, LinkRequest, State, server_error};
+use crate::rite::{render_error, Client, LinkRequest, State};
 
 pub async fn link_get(req: Request<State>) -> tide::Result {
     let session = req.session();
@@ -30,15 +30,13 @@ pub async fn link_get(req: Request<State>) -> tide::Result {
     .await?;
 
     match tera.render_response("link_client.html", &context) {
-        Ok(val) => {
-            return Ok(val);
-        }
+        Ok(val) => Ok(val),
         Err(err) => {
-            return server_error(
+            return render_error(
                 tera,
                 "Error while getting access token",
                 &format!("{:?}", err),
-                StatusCode::InternalServerError
+                StatusCode::InternalServerError,
             );
         }
     }
@@ -52,11 +50,11 @@ pub async fn delete(req: Request<State>) -> tide::Result {
     if let Some(val) = req.session().get("username") {
         username = val;
     } else {
-        return server_error(
+        return render_error(
             tera,
             "Unknown error",
             "Username was None trying to read session",
-            StatusCode::InternalServerError
+            StatusCode::InternalServerError,
         );
     }
 
@@ -102,11 +100,11 @@ pub async fn link_post(mut req: Request<State>) -> tide::Result {
         token = val.try_get("token")?;
         user = val.try_get("user")?;
     } else {
-        return server_error(
+        return render_error(
             tera,
             "Invalid or expired token",
             "The token you used was either not found or expired.",
-            StatusCode::Conflict
+            StatusCode::Conflict,
         );
     }
 
@@ -147,11 +145,10 @@ pub async fn view(req: Request<State>) -> tide::Result {
         .bind(username)
         .fetch_all(&mut db)
         .await?;
-    
+
         context.try_insert("rows", &rows)?;
         tera.render_response("view_clients.html", &context)
-    }
-    else {
-        server_error(tera, "Unknown error.", "", StatusCode::InternalServerError)
+    } else {
+        render_error(tera, "Unknown error.", "", StatusCode::InternalServerError)
     }
 }

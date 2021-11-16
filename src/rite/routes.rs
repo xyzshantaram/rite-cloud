@@ -16,5 +16,5 @@ pub async fn homepage(req: Request<State>) -> tide::Result {
     if let Some(username) = session.get::<String>("username") {
         context.try_insert("username", &username)?;
     }
-    Ok(tera.render_response("index.html", &context)?.into())
+    Ok(tera.render_response("index.html", &context)?)
 }

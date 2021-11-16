@@ -2,8 +2,8 @@ use http_types::StatusCode;
 use oauth2::basic::BasicClient;
 
 pub mod auth;
-pub mod middleware;
 pub mod config;
+pub mod middleware;
 pub mod routes;
 
 use config::RiteConfig;
@@ -43,29 +43,32 @@ pub struct Document {
 }
 
 impl FromRow<'_, SqliteRow> for Client {
-    fn from_row<'r>(row: &'r SqliteRow) -> Result<Self, sqlx::Error> {
-        let mut rv = Client::default();
-        rv.added_on = row.try_get::<NaiveDateTime, &str>("added_on")?.to_string();
-        rv.user = row.try_get("user")?;
-        rv.nickname = row.try_get("nickname")?;
-        rv.uuid = row.try_get("uuid")?;
+    fn from_row(row: &SqliteRow) -> Result<Self, sqlx::Error> {
+        let rv = Client {
+            added_on: row.try_get::<NaiveDateTime, &str>("added_on")?.to_string(),
+            user: row.try_get("user")?,
+            nickname: row.try_get("nickname")?,
+            uuid: row.try_get("uuid")?,
+        };
+
         Ok(rv)
     }
 }
 
 impl FromRow<'_, SqliteRow> for Document {
-    fn from_row<'r>(row: &'r SqliteRow) -> Result<Self, sqlx::Error> {
-        let mut rv = Document::default();
-        rv.name = row.try_get("name")?;
-        rv.contents = row.try_get("contents")?;
-        rv.revision = row.try_get("revision")?;
-        rv.user = row.try_get("user")?;
-        rv.public = if row.try_get("public")? { true } else { false };
+    fn from_row(row: &SqliteRow) -> Result<Self, sqlx::Error> {
+        let rv = Document {
+            name: row.try_get("name")?,
+            contents: row.try_get("contents")?,
+            revision: row.try_get("revision")?,
+            user: row.try_get("user")?,
+            public: row.try_get("public")?,
+        };
         Ok(rv)
     }
 }
 
-pub fn server_error(tera: tera::Tera, title: &str, msg: &str, status: StatusCode) -> tide::Result {
+pub fn render_error(tera: tera::Tera, title: &str, msg: &str, status: StatusCode) -> tide::Result {
     let mut res = tera.render_response(
         "500.html",
         &context! {

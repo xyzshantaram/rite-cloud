@@ -70,7 +70,6 @@ a:active {
     color: navy;
 }
 
-
 pre>code {
     background: inherit;
 }
@@ -131,7 +130,7 @@ form {
     margin: 1rem;
 }
 
-form > input {
+form>input {
     margin: 0.4rem;
     border-radius: 0.2rem;
     background: inherit;
@@ -142,19 +141,19 @@ form > input {
     outline: none;
 }
 
-form > input:focus:not(:hover) {
+form>input:focus:not(:hover) {
     border-color: #555555;
 }
 
-form > input[type=submit] {
+form>input[type=submit] {
     cursor: pointer;
 }
 
-form > input[type=submit]:active:not(:hover) {
+form>input[type=submit]:active:not(:hover) {
     border-color: #555555;
 }
 
-details > summary {
+details>summary {
     text-decoration: underline;
     font-weight: bold;
 }
@@ -175,8 +174,6 @@ details > summary {
     }
 }
 
-
-
 @media only screen and (prefers-color-scheme: dark) {
     body {
         background: #202020;
@@ -194,19 +191,15 @@ details > summary {
     code {
         background: #404040;
     }
-
-    form > input {
+    form>input {
         border-color: gray;
     }
-
-    form > input:focus:not(:hover) {
+    form>input:focus:not(:hover) {
         border-color: #f5f4f0;
     }
-    
-    form > input[type=submit]:active:not(:hover) {
+    form>input[type=submit]:active:not(:hover) {
         border-color: #f5f4f0;
     }
-
     input[type='text']:hover, input[type='submit']:hover {
         border-color: #aaaaaa;
     }

@@ -1,7 +1,7 @@
 use http_types::{convert::json, mime, Body, StatusCode};
 use tide::{Middleware, Next, Request, Response};
 
-use super::{State};
+use super::State;
 use crate::rite::routes::docs::UploadRequest;
 
 #[derive(Debug, Default, Clone)]
@@ -19,7 +19,7 @@ impl WebAuthCheck {
         next: Next<'a, State>,
     ) -> tide::Result {
         let session = req.session();
-        if let None = session.get::<String>("username") {
+        if session.get::<String>("username").is_none() {
             Ok(tide::Redirect::new("/").into())
         } else {
             Ok(next.run(req).await)
@@ -43,7 +43,11 @@ impl DocPrelimChecks {
         Self
     }
 
-    async fn check_and_respond<'a>(&'a self, mut req: Request<super::State>, next: Next<'a, super::State>) -> tide::Result {
+    async fn check_and_respond<'a>(
+        &'a self,
+        mut req: Request<super::State>,
+        next: Next<'a, super::State>,
+    ) -> tide::Result {
         let body_bytes = req.body_bytes().await?;
         let body: UploadRequest = serde_json::from_slice(&body_bytes)?;
 
@@ -66,7 +70,7 @@ impl DocPrelimChecks {
             .fetch_optional(&mut db)
             .await?;
 
-        if let None = doc {
+        if doc.is_none() {
             res.set_status(StatusCode::Unauthorized);
             res.set_body(Body::from_json(&json!({
                 "message": "Invalid credentials."

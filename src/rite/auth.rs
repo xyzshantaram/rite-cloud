@@ -1,6 +1,6 @@
 use std::string;
 
-use http_types::{StatusCode};
+use http_types::StatusCode;
 use oauth2::basic::BasicClient;
 use oauth2::curl::http_client;
 use oauth2::{
@@ -28,7 +28,7 @@ struct GhResponse {
 }
 
 use super::RiteConfig;
-use crate::rite::server_error;
+use crate::rite::render_error;
 use crate::State;
 use tide::{Redirect, Request};
 
@@ -63,7 +63,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                     tide::log::info!("User authorised, redirecting...");
                     Ok(Redirect::new("/").into())
                 }
-                Err(e) => server_error(
+                Err(e) => render_error(
                     tera,
                     "Could not log in",
                     &format!("error saving session: {:?}", e),
@@ -72,7 +72,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             }
         }
         Err(RequestTokenError::Parse(_, bytes)) => {
-            return server_error(
+            return render_error(
                 tera,
                 "Expired or invalid code while trying to log in",
                 &format!(
@@ -83,7 +83,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             );
         }
         Err(otherwise) => {
-            return server_error(
+            return render_error(
                 tera,
                 "Error while getting access token",
                 &format!("{:?}", otherwise),

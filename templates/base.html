@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
         rel="stylesheet">
+    <link rel="shortcut icon" href="/res/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -24,13 +25,12 @@
                 {% else %}
                 <a href="/auth/github">login with GitHub</a>
                 {% endif %}
-
-                {% if username %}
-                    <li><a href="/clients/link">link a client</a></li>
-                    <li><a href="/clients/view">view linked clients</a></li>
-                    <li><a href="/docs/list">view documents</a></li>
-                {% endif %}
             </li>
+            {% if username %}
+            <li><a href="/clients/link">link a client</a></li>
+            <li><a href="/clients/view">view linked clients</a></li>
+            <li><a href="/docs/list">view documents</a></li>
+            {% endif %}
         </ul>
     </nav>
 

@@ -6,8 +6,8 @@ use async_sqlx_session::SqliteSessionStore;
 use http_types::cookies::SameSite;
 use rite::{
     auth::{self, logout},
-    middleware::{DocPrelimChecks, WebAuthCheck},
     config::RiteConfig,
+    middleware::{DocPrelimChecks, WebAuthCheck},
     routes, State,
 };
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
@@ -38,7 +38,7 @@ async fn main() -> tide::Result<()> {
         cfg: cfg.clone(),
         tera,
         session_db: session_db.clone(),
-        rite_db: rite_db,
+        rite_db,
     };
 
     let mut app = tide::with_state(state.clone());
@@ -46,7 +46,7 @@ async fn main() -> tide::Result<()> {
     app.with(tide::log::LogMiddleware::new());
     app.with(build_session_middleware(session_db, &cfg.tide_secret).await?);
 
-    if let Ok(_) = std::env::var("RITE_LOG") {
+    if std::env::var("RITE_LOG").is_ok() {
         tide::log::start();
     }
 
@@ -95,10 +95,11 @@ async fn main() -> tide::Result<()> {
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);
 
-        app.at("/upload").with(GovernorMiddleware::per_minute(2)?)
+        app.at("/upload")
+            .with(GovernorMiddleware::per_minute(2)?)
             .with(DocPrelimChecks::new())
             .post(routes::docs::upload);
-        
+
         app
     };
 
@@ -116,7 +117,7 @@ async fn db_connection(url: String) -> tide::Result<SqlitePool> {
 
 async fn build_session_middleware(
     db: SqlitePool,
-    secret: &String,
+    secret: &str,
 ) -> tide::Result<SessionMiddleware<SqliteSessionStore>> {
     let session_store = SqliteSessionStore::from_client(db);
     session_store.migrate().await?;

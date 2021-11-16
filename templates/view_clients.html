@@ -4,19 +4,19 @@
 {% if rows and rows | length > 0 %}
 <h2>Your clients</h2>
 <ul>
-{% for client in rows %}
-<li>
-<span class='client-title'><strong>{{ client.nickname }}</strong></span>
-    <ul>
+    {% for client in rows %}
     <li>
-        added on {{ client.added_on }}
+        <span class='client-title'><strong>{{ client.nickname }}</strong></span>
+        <ul>
+            <li>
+                added on {{ client.added_on }}
+            </li>
+            <li>
+                <a class='delete' href='/clients/delete/{{ client.uuid }}'>Delete</a>
+            </li>
+        </ul>
     </li>
-    <li>
-        <a class='delete' href='/clients/delete/{{ client.uuid }}'>Delete</a>
-    </li>
-    </ul>
-</li>
-{% endfor %}
+    {% endfor %}
 </ul>
 {% else %}
 <p>You haven't linked any clients yet ...</p>

@@ -1,11 +1,11 @@
 use crate::{
-    rite::{server_error, Document},
+    rite::{render_error, Document},
     State,
 };
 use http_types::{convert::json, mime, StatusCode};
 use sqlx::Sqlite;
 use tide::{Request, Response};
-use tide_tera::{TideTeraExt, context};
+use tide_tera::{context, TideTeraExt};
 
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct UploadRequest {
@@ -16,6 +16,7 @@ pub struct UploadRequest {
     pub user: String,
     pub public: bool,
 }
+
 pub async fn upload(mut req: Request<State>) -> tide::Result {
     let body: UploadRequest = req.body_json().await?;
     let state = req.state();
@@ -30,7 +31,7 @@ pub async fn upload(mut req: Request<State>) -> tide::Result {
 
     let mut res = Response::new(StatusCode::Ok);
 
-    if let None = doc {
+    if doc.is_none() {
         let public = if body.public { 1 } else { 0 };
         sqlx::query("insert into documents(name, user, revision, contents, public, added_on) values(?, ?, ?, ?, ?, datetime('now'));")
             .bind(&body.name)
@@ -66,14 +67,13 @@ pub async fn clist(mut req: Request<State>) -> tide::Result {
     unimplemented!()
 }
 
-pub async fn list(mut req: Request<State>) -> tide::Result {
+pub async fn list(req: Request<State>) -> tide::Result {
     let state = req.state();
     let session = req.session();
     let mut db = state.rite_db.acquire().await?;
     let tera = state.tera.clone();
 
     if let Some(val) = session.get::<String>("username") {
-        
         let username = val;
         let rows: Vec<Document> = sqlx::query_as::<Sqlite, Document>(
             "SELECT name, contents, revision, user, public from documents where user = ?;",
@@ -82,7 +82,7 @@ pub async fn list(mut req: Request<State>) -> tide::Result {
         .fetch_all(&mut db)
         .await?;
 
-        let mut context = context!{
+        let mut context = context! {
             "section" => "view documents"
         };
         context.try_insert("docs", &rows)?;
@@ -90,11 +90,6 @@ pub async fn list(mut req: Request<State>) -> tide::Result {
 
         tera.render_response("view_documents.html", &context)
     } else {
-        server_error(
-            tera,
-            "Unknown error.",
-            "",
-            StatusCode::InternalServerError,
-        )
+        render_error(tera, "Unknown error.", "", StatusCode::InternalServerError)
     }
 }
