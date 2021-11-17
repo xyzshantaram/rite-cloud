@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 
-<a href='?raw=true'>View raw</a>
+<a id='raw-link' href='?raw=true'>View raw</a>
+<a href='javascript:void(0)' id='print'>Print</a>
 <div id='md-raw'>{{ contents }}</div>
 <div id='loading'>
     Loading
@@ -12,12 +13,41 @@
     window.addEventListener("DOMContentLoaded", () => {
         const loading = document.querySelector("#loading");
         const raw = document.querySelector("#md-raw");
+        const print = document.querySelector('#print');
+        const rawLink = document.querySelector('#raw-link');
 
+        print.addEventListener('click', () => {
+            window.print();
+        })
+
+        const hidden = [];
         const result = document.createElement("div");
         result.id = 'md-rendered';
 
+        window.onbeforeprint = () => {
+            let toHide = [...Array.from(document.querySelectorAll("body>*:not(#content)")), print, rawLink];
+            toHide.forEach(elem => {
+                hidden.push({
+                    e: elem,
+                    d: window.getComputedStyle(elem).display
+                });
+                elem.style.display = 'none';
+            })
+            result.style.borderTopColor = 'transparent';
+            document.body.style.marginTop = '0';
+        }
+
+        window.onafterprint = () => {
+            let next = null;
+            while (next = hidden.pop()) {
+                console.log(next)
+                next.e.style.display = next.d;
+            }
+            result.style.borderTopColor = 'gray';
+            document.body.style.marginTop = '5rem';
+        }
+
         let rendered = marked.parse(raw.innerHTML);
-        console.log(rendered);
         result.innerHTML = marked.parse(rendered);
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
