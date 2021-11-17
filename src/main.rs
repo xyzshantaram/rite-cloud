@@ -77,17 +77,18 @@ async fn main() -> tide::Result<()> {
         let mut app = tide::with_state(state.clone());
 
         app.at("/view/:uuid").get(routes::docs::view);
-
         app.at("/list")
             .with(WebAuthCheck::new())
             .get(routes::docs::list);
-
         app.at("/delete/:name/:revision")
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);
         app.at("/delete/:name")
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);
+        app.at("/toggle-visibility/:uuid")
+            .with(WebAuthCheck::new())
+            .get(routes::docs::toggle_visibility);
         app.at("/delete")
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);

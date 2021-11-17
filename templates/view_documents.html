@@ -19,7 +19,7 @@
             <li>
                 Revision <strong>{{ revision.revision }}</strong>
                 <div>
-                    Visibility: <strong> {% if revision.public %} Public {% else %} Hidden {% endif %} </strong>
+                    Visibility: <strong> {% if revision.public %} Public {% else %} Private {% endif %} </strong>
                 </div>
                 <div>
                     <a href="/docs/view/{{ revision.uuid | urlencode_strict }}">View
@@ -27,6 +27,9 @@
 
                     <a class='delete'
                         href="/docs/delete/{{ name | urlencode_strict }}/{{ revision.revision | urlencode_strict }}">Delete</a>
+
+                    <a href="/docs/toggle-visibility/{{ revision.uuid | urlencode_strict }}">Make {% if revision.public
+                        %} private {% else %} public {% endif %} </a>
                 </div>
             </li>
         </ul>

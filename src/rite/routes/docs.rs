@@ -197,8 +197,38 @@ pub async fn api_contents(mut req: Request<State>) -> tide::Result {
     unimplemented!()
 }
 
-pub async fn toggle_visibility(mut req: Request<State>) -> tide::Result {
-    unimplemented!()
+pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
+    let state = req.state();
+    let tera = state.tera.clone();
+    let mut db = state.rite_db.acquire().await?;
+
+    let uuid;
+    if let Ok(val) = req.param("uuid") {
+        uuid = decode(val)?.into_owned()
+    } else {
+        return render_error(tera, "Bad request.", "", StatusCode::BadRequest);
+    }
+
+    let doc_exists: Option<Document> =
+        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;")
+            .bind(&uuid)
+            .fetch_optional(&mut db)
+            .await?;
+
+    if doc_exists.is_some() {
+        sqlx::query("update documents set public = ((public | 1) - (public & 1)) where uuid = ?;")
+            .bind(uuid)
+            .execute(&mut db)
+            .await?;
+        Ok(Redirect::new("/docs/list").into())
+    } else {
+        render_error(
+            tera,
+            "Not found.",
+            "The document specified for deletion was not found.",
+            StatusCode::NotFound,
+        )
+    }
 }
 
 pub async fn contents(
