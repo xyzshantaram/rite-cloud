@@ -22,7 +22,7 @@
                     Visibility: <strong> {% if revision.public %} Public {% else %} Hidden {% endif %} </strong>
                 </div>
                 <div>
-                    <a href="/docs/view/{{ name | urlencode_strict }}/{{ revision.revision | urlencode_strict }}">View
+                    <a href="/docs/view/{{ revision.uuid | urlencode_strict }}">View
                         online (requires JavaScript)</a>
 
                     <a class='delete'

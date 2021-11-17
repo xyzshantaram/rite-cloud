@@ -21,7 +21,7 @@
     The nickname must be composed only of alphanumeric characters, and should not start with a number or a hyphen.
 </p>
 <div class='add-client'>
-    <form method="post" action="/clients/link">
+    <form method="post" action="/clients/create">
         <input type="hidden" name="token" value="{{ token }}">
         <label for="nickname">Choose a nickname: </label>
         <input id="nickname" type="text" name="nickname"

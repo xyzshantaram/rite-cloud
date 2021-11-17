@@ -68,6 +68,7 @@ async fn main() -> tide::Result<()> {
         app.at("/link").get(routes::clients::link_get);
         app.at("/view").get(routes::clients::view);
         app.at("/delete/:uuid").get(routes::clients::delete);
+        app.at("/create").post(routes::clients::create);
 
         app
     };
@@ -75,7 +76,7 @@ async fn main() -> tide::Result<()> {
     let docs = {
         let mut app = tide::with_state(state.clone());
 
-        app.at("/view/:name/:revision").get(routes::docs::view);
+        app.at("/view/:uuid").get(routes::docs::view);
 
         app.at("/list")
             .with(WebAuthCheck::new())
@@ -104,7 +105,7 @@ async fn main() -> tide::Result<()> {
             .with(DocPrelimChecks::new())
             .get(routes::docs::api_list_docs);
 
-        app.at("/link").post(routes::clients::api_link);
+        app.at("/contents/:uuid").post(routes::docs::api_contents);
         app
     };
 
@@ -168,19 +169,8 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         revision TEXT,
         contents TEXT,
         public BOOLEAN,
-        added_on DATETIME
-    )",
-    )
-    .execute(&mut db.acquire().await?)
-    .await?;
-
-    sqlx::query(
-        "
-    CREATE TABLE IF NOT EXISTS revisions (
-        document TEXT,
-        name TEXT,
-        user TEXT,
-        contents TEXT
+        added_on DATETIME,
+        uuid TEXT
     )",
     )
     .execute(&mut db.acquire().await?)

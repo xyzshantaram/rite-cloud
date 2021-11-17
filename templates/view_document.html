@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href='?raw=true'>View raw</a>
+<div id='md-raw'>{{ contents }}</div>
+<div id='loading'>
+    Loading
+</div>
+
+<script type='module'>
+    import { marked } from 'https://esm.sh/marked';
+    window.addEventListener("DOMContentLoaded", () => {
+        const loading = document.querySelector("#loading");
+        const raw = document.querySelector("#md-raw");
+
+        const result = document.createElement("div");
+        result.id = 'md-rendered';
+
+        let rendered = marked.parse(raw.innerHTML);
+        console.log(rendered);
+        result.innerHTML = marked.parse(rendered);
+        raw.insertAdjacentElement("afterend", result);
+        loading.style.display = 'none';
+    })
+</script>
+
+{% endblock content %}

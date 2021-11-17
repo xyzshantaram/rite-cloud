@@ -67,7 +67,7 @@ pub async fn delete(req: Request<State>) -> tide::Result {
     Ok(Redirect::new("/clients/view").into())
 }
 
-pub async fn api_link(mut req: Request<State>) -> tide::Result {
+pub async fn create(mut req: Request<State>) -> tide::Result {
     let session = req.session();
     let state = req.state();
     let db = state.rite_db.clone();

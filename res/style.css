@@ -7,13 +7,56 @@ html {
     justify-content: center;
 }
 
+#md-raw {
+    display: none;
+}
+
+#loading {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    margin-top: 1rem;
+}
+
+#loading::after {
+    margin: 0;
+    content: '';
+    animation: blinking-ellipsis 2s linear infinite;
+    color: inherit;
+    font-weight: bold;
+}
+
+@keyframes blinking-ellipsis {
+    0% {
+        content: '';
+    }
+    25% {
+        content: '.';
+    }
+    50% {
+        content: '..';
+    }
+    75% {
+        content: '...';
+    }
+    100% {
+        content: '';
+    }
+}
+
+#md-rendered {
+    padding: 1rem;
+    border-top: 2px solid gray;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
 body {
     max-width: 80ch;
     font-family: "Courier Prime", monospace;
     width: 100%;
     margin-top: 5rem;
     line-height: 1.6;
-    margin-left: 1.1rem;
     margin-bottom: 3rem;
 }
 

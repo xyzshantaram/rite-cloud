@@ -1,4 +1,4 @@
-use http_types::{convert::json, mime, Body, StatusCode};
+use http_types::{convert::json, headers::ACCESS_CONTROL_ALLOW_ORIGIN, mime, Body, StatusCode};
 use tide::{Middleware, Next, Request, Response};
 
 use super::State;
@@ -55,6 +55,7 @@ impl DocPrelimChecks {
         let mut db = state.rite_db.clone().acquire().await?;
         let mut res = Response::new(StatusCode::Ok);
         res.set_content_type(mime::JSON);
+        res.insert_header(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
         if body_bytes.len() > req.state().cfg.file_limit {
             res.set_status(StatusCode::UnprocessableEntity);

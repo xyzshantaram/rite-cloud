@@ -40,6 +40,7 @@ pub struct Document {
     pub contents: String,
     pub user: String,
     pub public: bool,
+    pub uuid: String,
 }
 
 impl FromRow<'_, SqliteRow> for Client {
@@ -63,6 +64,7 @@ impl FromRow<'_, SqliteRow> for Document {
             revision: row.try_get("revision")?,
             user: row.try_get("user")?,
             public: row.try_get("public")?,
+            uuid: row.try_get("uuid")?,
         };
         Ok(rv)
     }
