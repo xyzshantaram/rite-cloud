@@ -1,8 +1,8 @@
-use http_types::{convert::json, headers::ACCESS_CONTROL_ALLOW_ORIGIN, mime, Body, StatusCode};
+use http_types::{convert::json, mime, StatusCode};
 use tide::{Middleware, Next, Request, Response};
 
 use super::State;
-use crate::rite::routes::docs::UploadRequest;
+use crate::rite::routes::docs::BasicClientRequest;
 
 #[derive(Debug, Default, Clone)]
 pub struct WebAuthCheck;
@@ -49,19 +49,17 @@ impl DocPrelimChecks {
         next: Next<'a, super::State>,
     ) -> tide::Result {
         let body_bytes = req.body_bytes().await?;
-        let body: UploadRequest = serde_json::from_slice(&body_bytes)?;
+        let body: BasicClientRequest = serde_json::from_slice(&body_bytes)?;
 
         let state = req.state();
         let mut db = state.rite_db.clone().acquire().await?;
         let mut res = Response::new(StatusCode::Ok);
         res.set_content_type(mime::JSON);
-        res.insert_header(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        res.insert_header("Access-Control-Allow-Origin", "*");
 
         if body_bytes.len() > req.state().cfg.file_limit {
             res.set_status(StatusCode::UnprocessableEntity);
-            res.set_body(json!({
-                "message": "Request too large."
-            }));
+            res.set_body(json!({ "message": "Request too large." }));
             return Ok(res);
         }
 
@@ -73,9 +71,9 @@ impl DocPrelimChecks {
 
         if doc.is_none() {
             res.set_status(StatusCode::Unauthorized);
-            res.set_body(Body::from_json(&json!({
+            res.set_body(json!({
                 "message": "Invalid credentials."
-            }))?);
+            }));
             Ok(res)
         } else {
             req.set_body(body_bytes);

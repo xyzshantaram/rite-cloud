@@ -1,8 +1,8 @@
 use crate::{
-    rite::{render_error, Document},
+    rite::{render_error, Document, DocumentMetadata},
     State,
 };
-use http_types::{convert::json, headers::ACCESS_CONTROL_ALLOW_ORIGIN, mime, StatusCode};
+use http_types::{convert::json, mime, StatusCode};
 use serde::Deserialize;
 use sqlx::{pool::PoolConnection, query::QueryAs, sqlite::SqliteArguments, Sqlite};
 use tide::{Redirect, Request, Response};
@@ -18,6 +18,12 @@ pub struct UploadRequest {
     pub token: String,
     pub user: String,
     pub public: bool,
+}
+
+#[derive(Clone, Debug, serde::Deserialize)]
+pub struct BasicClientRequest {
+    pub token: String,
+    pub user: String,
 }
 
 pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
@@ -48,14 +54,10 @@ pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
             .bind(uuid.to_string())
             .execute(&mut db)
             .await?;
-        res.set_body(json!({
-            "message": "Ok"
-        }));
+        res.set_body(json!({ "message": "Ok" }));
     } else {
         res.set_status(StatusCode::Conflict);
-        res.set_body(json!({
-            "message": "Duplicate revision."
-        }));
+        res.set_body(json!({ "message": "Duplicate revision." }));
     }
 
     Ok(res)
@@ -189,8 +191,32 @@ pub async fn view(req: Request<State>) -> tide::Result {
     }
 }
 
-pub async fn api_list_docs(mut req: Request<State>) -> tide::Result {
-    unimplemented!()
+pub async fn api_list(mut req: Request<State>) -> tide::Result {
+    let state = req.state();
+    let mut db = state.rite_db.acquire().await?;
+    let body: BasicClientRequest = req.body_json().await?;
+
+    let rows: Vec<DocumentMetadata> = sqlx::query_as::<Sqlite, DocumentMetadata>(
+        "SELECT name, revision, user, public, uuid from documents where user = ?;",
+    )
+    .bind(&body.user)
+    .fetch_all(&mut db)
+    .await?;
+
+    let mut res = Response::new(StatusCode::Ok);
+    res.set_content_type(mime::JSON);
+    res.insert_header("Access-Control-Allow-Origin", "*");
+
+    if let Ok(val) = serde_json::to_value(rows) {
+        res.set_body(val);
+    } else {
+        res.set_status(StatusCode::InternalServerError);
+        res.set_body(json!({
+            "message": "Unknown error."
+        }));
+    }
+
+    Ok(res)
 }
 
 pub async fn api_contents(mut req: Request<State>) -> tide::Result {

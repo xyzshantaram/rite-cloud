@@ -43,30 +43,48 @@ pub struct Document {
     pub uuid: String,
 }
 
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct DocumentMetadata {
+    pub name: String,
+    pub revision: String,
+    pub user: String,
+    pub public: bool,
+    pub uuid: String,
+}
+
 impl FromRow<'_, SqliteRow> for Client {
     fn from_row(row: &SqliteRow) -> Result<Self, sqlx::Error> {
-        let rv = Client {
+        Ok(Client {
             added_on: row.try_get::<NaiveDateTime, &str>("added_on")?.to_string(),
             user: row.try_get("user")?,
             nickname: row.try_get("nickname")?,
             uuid: row.try_get("uuid")?,
-        };
-
-        Ok(rv)
+        })
     }
 }
 
 impl FromRow<'_, SqliteRow> for Document {
     fn from_row(row: &SqliteRow) -> Result<Self, sqlx::Error> {
-        let rv = Document {
+        Ok(Document {
             name: row.try_get("name")?,
             contents: row.try_get("contents")?,
             revision: row.try_get("revision")?,
             user: row.try_get("user")?,
             public: row.try_get("public")?,
             uuid: row.try_get("uuid")?,
-        };
-        Ok(rv)
+        })
+    }
+}
+
+impl FromRow<'_, SqliteRow> for DocumentMetadata {
+    fn from_row(row: &SqliteRow) -> Result<Self, sqlx::Error> {
+        Ok(DocumentMetadata {
+            name: row.try_get("name")?,
+            revision: row.try_get("revision")?,
+            user: row.try_get("user")?,
+            public: row.try_get("public")?,
+            uuid: row.try_get("uuid")?,
+        })
     }
 }
 
