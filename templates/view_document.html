@@ -10,6 +10,8 @@
 
 <script type='module'>
     import { marked } from 'https://esm.sh/marked';
+    import DOMPurify from 'https://esm.sh/dompurify';
+
     window.addEventListener("DOMContentLoaded", () => {
         const loading = document.querySelector("#loading");
         const raw = document.querySelector("#md-raw");
@@ -48,7 +50,7 @@
         }
 
         let rendered = marked.parse(raw.innerHTML);
-        result.innerHTML = marked.parse(rendered);
+        result.innerHTML = DOMPurify.sanitize(rendered);
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
     })
