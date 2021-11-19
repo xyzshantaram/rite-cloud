@@ -26,6 +26,13 @@ pub struct BasicClientRequest {
     pub user: String,
 }
 
+#[derive(Clone, Debug, serde::Deserialize)]
+pub struct ContentRequest {
+    pub token: String,
+    pub user: String,
+    pub uuid: String,
+}
+
 pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
     let body: UploadRequest = req.body_json().await?;
     let state = req.state();
@@ -124,7 +131,7 @@ pub async fn delete(req: Request<State>) -> tide::Result {
 
 pub enum ContentGetError {
     NotFound,
-    QueryFailed,
+    Unknown,
     Forbidden,
 }
 
@@ -145,13 +152,13 @@ pub async fn view(req: Request<State>) -> tide::Result {
     let req_uuid = req.param("uuid")?;
     let uuid = decode(req_uuid)?;
 
-    let loggedin = session.get::<String>("username").is_some();
+    let username = session.get::<String>("username");
     let params: ViewQueryParams = req.query()?;
     let state = req.state().clone();
     let mut db = state.rite_db.acquire().await?;
     let tera = state.tera.clone();
 
-    match contents(&uuid, &mut db, !loggedin).await {
+    match contents(&uuid, &mut db, username.clone()).await {
         Ok(val) => {
             if params.raw {
                 let mut res = Response::new(StatusCode::Ok);
@@ -160,7 +167,7 @@ pub async fn view(req: Request<State>) -> tide::Result {
                 Ok(res)
             } else {
                 let ctx = context! {
-                    "username" => session.get::<String>("username").unwrap_or_default(),
+                    "username" => username.unwrap_or_default(),
                     "section" => "view document",
                     "contents" => val
                 };
@@ -181,7 +188,7 @@ pub async fn view(req: Request<State>) -> tide::Result {
                 "You are not authorized to view the requested document.",
                 StatusCode::Forbidden,
             ),
-            ContentGetError::QueryFailed => render_error(
+            ContentGetError::Unknown => render_error(
                 tera,
                 "Error",
                 "An unknown error occurred.",
@@ -220,7 +227,37 @@ pub async fn api_list(mut req: Request<State>) -> tide::Result {
 }
 
 pub async fn api_contents(mut req: Request<State>) -> tide::Result {
-    unimplemented!()
+    let json: ContentRequest = req.body_json().await?;
+    let state = req.state();
+    let mut db = state.rite_db.acquire().await?;
+
+    let mut res = Response::new(StatusCode::Ok);
+    res.insert_header("Access-Control-Allow-Origin", "*");
+
+    match contents(&json.uuid, &mut db, Some(json.user)).await {
+        Ok(val) => res.set_body(json!({ "message": "Ok", "contents": val })),
+        Err(kind) => match kind {
+            ContentGetError::NotFound => {
+                res.set_status(StatusCode::NotFound);
+                res.set_body(json!({
+                    "message": "Not found."
+                }));
+            }
+            ContentGetError::Forbidden => {
+                res.set_status(StatusCode::Forbidden);
+                res.set_body(json!({
+                    "message": "Forbidden."
+                }))
+            }
+            ContentGetError::Unknown => {
+                res.set_status(StatusCode::InternalServerError);
+                res.set_body(json!({
+                    "message": "An unknown error occurred."
+                }))
+            }
+        },
+    }
+    Ok(res)
 }
 
 pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
@@ -260,23 +297,33 @@ pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
 pub async fn contents(
     uuid: &str,
     db: &mut PoolConnection<Sqlite>,
-    public_access: bool,
+    user: Option<String>,
 ) -> Result<String, ContentGetError> {
     let query =
         sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;").bind(uuid);
     let res_: Result<Option<Document>, sqlx::Error> = query.fetch_optional(db).await;
+
     if let Ok(res) = res_ {
         if let Some(doc) = res {
-            if public_access && !doc.public {
-                Err(ContentGetError::Forbidden)
-            } else {
+            if doc.public {
                 Ok(doc.contents)
+            } else if !doc.public && user.is_none() {
+                Err(ContentGetError::Forbidden)
+            } else if !doc.public && user.is_some() {
+                let username = user.unwrap();
+                if doc.user == username {
+                    Ok(doc.contents)
+                } else {
+                    Err(ContentGetError::Forbidden)
+                }
+            } else {
+                Err(ContentGetError::Unknown)
             }
         } else {
             Err(ContentGetError::NotFound)
         }
     } else {
-        Err(ContentGetError::QueryFailed)
+        Err(ContentGetError::Unknown)
     }
 }
 

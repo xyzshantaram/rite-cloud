@@ -106,7 +106,7 @@ async fn main() -> tide::Result<()> {
             .with(DocPrelimChecks::new())
             .post(routes::docs::api_list);
 
-        app.at("/contents/:uuid").post(routes::docs::api_contents);
+        app.at("/docs/contents").post(routes::docs::api_contents);
         app
     };
 
