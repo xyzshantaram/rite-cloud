@@ -101,12 +101,12 @@ async fn main() -> tide::Result<()> {
         app.at("/docs/upload")
             .with(GovernorMiddleware::per_minute(2)?)
             .with(DocPrelimChecks::new())
-            .post(routes::docs::api_upload_doc);
+            .post(routes::api::upload);
         app.at("/docs/list")
             .with(DocPrelimChecks::new())
-            .post(routes::docs::api_list);
+            .post(routes::api::list);
 
-        app.at("/docs/contents").post(routes::docs::api_contents);
+        app.at("/docs/contents").post(routes::api::contents);
         app
     };
 
@@ -171,7 +171,7 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         contents TEXT,
         public BOOLEAN,
         added_on DATETIME,
-        uuid TEXT
+        uuid TEXT UNIQUE
     )",
     )
     .execute(&mut db.acquire().await?)

@@ -2,7 +2,7 @@ use http_types::{convert::json, mime, StatusCode};
 use tide::{Middleware, Next, Request, Response};
 
 use super::State;
-use crate::rite::routes::docs::BasicClientRequest;
+use crate::rite::routes::api::BasicClientRequest;
 
 #[derive(Debug, Default, Clone)]
 pub struct WebAuthCheck;

@@ -2,6 +2,7 @@ use tide_tera::{context, TideTeraExt};
 
 use super::State;
 
+pub mod api;
 pub mod clients;
 pub mod docs;
 

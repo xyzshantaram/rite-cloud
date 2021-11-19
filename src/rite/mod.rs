@@ -7,7 +7,10 @@ pub mod middleware;
 pub mod routes;
 
 use config::RiteConfig;
-use sqlx::{sqlite::SqliteRow, types::chrono::NaiveDateTime, FromRow, Row, SqlitePool};
+use sqlx::{
+    pool::PoolConnection, sqlite::SqliteRow, types::chrono::NaiveDateTime, FromRow, Row, Sqlite,
+    SqlitePool,
+};
 use tide_tera::{context, TideTeraExt};
 
 #[derive(Clone, Debug)]
@@ -50,6 +53,12 @@ pub struct DocumentMetadata {
     pub user: String,
     pub public: bool,
     pub uuid: String,
+}
+
+pub enum ContentGetError {
+    NotFound,
+    Unknown,
+    Forbidden,
 }
 
 impl FromRow<'_, SqliteRow> for Client {
@@ -100,4 +109,42 @@ pub fn render_error(tera: tera::Tera, title: &str, msg: &str, status: StatusCode
     res.set_status(status);
 
     Ok(res)
+}
+
+pub async fn contents(
+    uuid: &str,
+    db: &mut PoolConnection<Sqlite>,
+    user: Option<String>,
+) -> Result<String, ContentGetError> {
+    let query = if user.is_none() {
+        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;").bind(uuid)
+    } else {
+        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ? and user = ?;")
+            .bind(uuid)
+            .bind(user.clone().unwrap_or_default())
+    };
+    let res_: Result<Option<Document>, sqlx::Error> = query.fetch_optional(db).await;
+
+    if let Ok(res) = res_ {
+        if let Some(doc) = res {
+            if doc.public {
+                Ok(doc.contents)
+            } else if !doc.public && user.is_none() {
+                Err(ContentGetError::Forbidden)
+            } else if !doc.public && user.is_some() {
+                let username = user.unwrap();
+                if doc.user == username {
+                    Ok(doc.contents)
+                } else {
+                    Err(ContentGetError::Forbidden)
+                }
+            } else {
+                Err(ContentGetError::Unknown)
+            }
+        } else {
+            Err(ContentGetError::NotFound)
+        }
+    } else {
+        Err(ContentGetError::Unknown)
+    }
 }

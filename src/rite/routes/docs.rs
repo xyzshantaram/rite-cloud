@@ -1,74 +1,13 @@
 use crate::{
-    rite::{render_error, Document, DocumentMetadata},
+    rite::{contents, render_error, ContentGetError, Document},
     State,
 };
-use http_types::{convert::json, mime, StatusCode};
+use http_types::{mime, StatusCode};
 use serde::Deserialize;
-use sqlx::{pool::PoolConnection, query::QueryAs, sqlite::SqliteArguments, Sqlite};
+use sqlx::{query::QueryAs, sqlite::SqliteArguments, Sqlite};
 use tide::{Redirect, Request, Response};
 use tide_tera::{context, TideTeraExt};
 use urlencoding::decode;
-use uuid::Uuid;
-
-#[derive(Clone, Debug, serde::Deserialize)]
-pub struct UploadRequest {
-    pub name: String,
-    pub revision: String,
-    pub contents: String,
-    pub token: String,
-    pub user: String,
-    pub public: bool,
-}
-
-#[derive(Clone, Debug, serde::Deserialize)]
-pub struct BasicClientRequest {
-    pub token: String,
-    pub user: String,
-}
-
-#[derive(Clone, Debug, serde::Deserialize)]
-pub struct ContentRequest {
-    pub token: String,
-    pub user: String,
-    pub uuid: String,
-}
-
-pub async fn api_upload_doc(mut req: Request<State>) -> tide::Result {
-    let body: UploadRequest = req.body_json().await?;
-    let state = req.state();
-    let mut db = state.rite_db.acquire().await?;
-
-    let doc = sqlx::query("select * from documents where user = ? and name = ? and revision = ?;")
-        .bind(&body.user)
-        .bind(&body.name)
-        .bind(&body.revision)
-        .fetch_optional(&mut db)
-        .await?;
-
-    let mut res = Response::new(StatusCode::Ok);
-    res.set_content_type(mime::JSON);
-    res.insert_header("Access-Control-Allow-Origin", "*");
-    let uuid = Uuid::new_v4();
-
-    if doc.is_none() {
-        let public = if body.public { 1 } else { 0 };
-        sqlx::query("insert into documents(name, user, revision, contents, public, added_on, uuid) values(?, ?, ?, ?, ?, datetime('now'), ?);")
-            .bind(&body.name)
-            .bind(&body.user)
-            .bind(&body.revision)
-            .bind(&body.contents)
-            .bind(public)
-            .bind(uuid.to_string())
-            .execute(&mut db)
-            .await?;
-        res.set_body(json!({ "message": "Ok" }));
-    } else {
-        res.set_status(StatusCode::Conflict);
-        res.set_body(json!({ "message": "Duplicate revision." }));
-    }
-
-    Ok(res)
-}
 
 pub async fn delete(req: Request<State>) -> tide::Result {
     let state = req.state();
@@ -127,12 +66,6 @@ pub async fn delete(req: Request<State>) -> tide::Result {
             StatusCode::NotFound,
         )
     }
-}
-
-pub enum ContentGetError {
-    NotFound,
-    Unknown,
-    Forbidden,
 }
 
 #[derive(Deserialize)]
@@ -198,68 +131,6 @@ pub async fn view(req: Request<State>) -> tide::Result {
     }
 }
 
-pub async fn api_list(mut req: Request<State>) -> tide::Result {
-    let state = req.state();
-    let mut db = state.rite_db.acquire().await?;
-    let body: BasicClientRequest = req.body_json().await?;
-
-    let rows: Vec<DocumentMetadata> = sqlx::query_as::<Sqlite, DocumentMetadata>(
-        "SELECT name, revision, user, public, uuid from documents where user = ?;",
-    )
-    .bind(&body.user)
-    .fetch_all(&mut db)
-    .await?;
-
-    let mut res = Response::new(StatusCode::Ok);
-    res.set_content_type(mime::JSON);
-    res.insert_header("Access-Control-Allow-Origin", "*");
-
-    if let Ok(val) = serde_json::to_value(rows) {
-        res.set_body(val);
-    } else {
-        res.set_status(StatusCode::InternalServerError);
-        res.set_body(json!({
-            "message": "Unknown error."
-        }));
-    }
-
-    Ok(res)
-}
-
-pub async fn api_contents(mut req: Request<State>) -> tide::Result {
-    let json: ContentRequest = req.body_json().await?;
-    let state = req.state();
-    let mut db = state.rite_db.acquire().await?;
-
-    let mut res = Response::new(StatusCode::Ok);
-    res.insert_header("Access-Control-Allow-Origin", "*");
-
-    match contents(&json.uuid, &mut db, Some(json.user)).await {
-        Ok(val) => res.set_body(json!({ "message": "Ok", "contents": val })),
-        Err(kind) => match kind {
-            ContentGetError::NotFound => {
-                res.set_status(StatusCode::NotFound);
-                res.set_body(json!({
-                    "message": "Not found."
-                }));
-            }
-            ContentGetError::Forbidden => {
-                res.set_status(StatusCode::Forbidden);
-                res.set_body(json!({
-                    "message": "Forbidden."
-                }))
-            }
-            ContentGetError::Unknown => {
-                res.set_status(StatusCode::InternalServerError);
-                res.set_body(json!({
-                    "message": "An unknown error occurred."
-                }))
-            }
-        },
-    }
-    Ok(res)
-}
-
 pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
     let state = req.state();
     let tera = state.tera.clone();
@@ -291,39 +162,6 @@ pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
             "The document specified for deletion was not found.",
             StatusCode::NotFound,
         )
-    }
-}
-
-pub async fn contents(
-    uuid: &str,
-    db: &mut PoolConnection<Sqlite>,
-    user: Option<String>,
-) -> Result<String, ContentGetError> {
-    let query =
-        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;").bind(uuid);
-    let res_: Result<Option<Document>, sqlx::Error> = query.fetch_optional(db).await;
-
-    if let Ok(res) = res_ {
-        if let Some(doc) = res {
-            if doc.public {
-                Ok(doc.contents)
-            } else if !doc.public && user.is_none() {
-                Err(ContentGetError::Forbidden)
-            } else if !doc.public && user.is_some() {
-                let username = user.unwrap();
-                if doc.user == username {
-                    Ok(doc.contents)
-                } else {
-                    Err(ContentGetError::Forbidden)
-                }
-            } else {
-                Err(ContentGetError::Unknown)
-            }
-        } else {
-            Err(ContentGetError::NotFound)
-        }
-    } else {
-        Err(ContentGetError::Unknown)
     }
 }
 
