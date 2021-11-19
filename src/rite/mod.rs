@@ -116,35 +116,17 @@ pub async fn contents(
     db: &mut PoolConnection<Sqlite>,
     user: Option<String>,
 ) -> Result<String, ContentGetError> {
-    let query = if user.is_none() {
-        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;").bind(uuid)
-    } else {
-        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ? and user = ?;")
+    let doc: Document =
+        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;")
             .bind(uuid)
-            .bind(user.clone().unwrap_or_default())
-    };
-    let res_: Result<Option<Document>, sqlx::Error> = query.fetch_optional(db).await;
+            .fetch_optional(db)
+            .await
+            .or(Err(ContentGetError::Unknown))?
+            .ok_or(ContentGetError::NotFound)?;
 
-    if let Ok(res) = res_ {
-        if let Some(doc) = res {
-            if doc.public {
-                Ok(doc.contents)
-            } else if !doc.public && user.is_none() {
-                Err(ContentGetError::Forbidden)
-            } else if !doc.public && user.is_some() {
-                let username = user.unwrap();
-                if doc.user == username {
-                    Ok(doc.contents)
-                } else {
-                    Err(ContentGetError::Forbidden)
-                }
-            } else {
-                Err(ContentGetError::Unknown)
-            }
-        } else {
-            Err(ContentGetError::NotFound)
-        }
+    if doc.public || user == Some(doc.user) {
+        Ok(doc.contents)
     } else {
-        Err(ContentGetError::Unknown)
+        Err(ContentGetError::Forbidden)
     }
 }
