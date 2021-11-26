@@ -1,9 +1,11 @@
 {% extends "base.html" %}
-{% block content %}
 
 <div>
-    Viewing <strong>{{ title }}</strong> <em>(revision {{ revision }})</em>
+    <strong>{{ title }}</strong> <em>(revision {{ revision }})</em>
 </div>
+
+{% block content %}
+
 <a id='raw-link' href='?raw=true'>View raw</a>
 <a href='javascript:void(0)' id='print'>Print</a>
 <div id='md-raw'>{{ contents }}</div>
