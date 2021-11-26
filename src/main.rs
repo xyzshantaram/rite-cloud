@@ -50,8 +50,15 @@ async fn main() -> tide::Result<()> {
         tide::log::start();
     }
 
+    // assets
     app.at("/res").serve_dir("res")?;
+
+    // static pages
     app.at("/").serve_file("res/landing.html")?;
+    app.at("/help/").serve_file("res/docs/index.html")?;
+    app.at("/help").serve_dir("res/docs/")?;
+
+    // homepage
     app.at("/home").get(routes::homepage);
 
     let auth = {

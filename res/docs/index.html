@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/res/style.css">
+    <title> rite </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="shortcut icon" href="/res/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <h1> rite - guide </h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="/">Front page</a>
+            </li>
+            <li>
+                <a href="/home">Go to Rite Cloud</a>
+            </li>
+            <li>
+                <a href="#basics">Basics</a>
+            </li>
+            <li>
+                <a target="_blank" href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+                    title="Learn Markdown">
+                    Learn Markdown
+                </a>
+            </li>
+            <li>
+                <a href="#keyboard-shortcuts">
+                    Keyboard shortcuts
+                </a>
+            </li>
+            <li>
+                <a href="#customization">
+                    Customization
+                </a>
+            </li>
+            <li>
+                <a href="#rite-cloud">
+                    Rite Cloud
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="content">
+        <h3>Installing and Basic Usage</h3>
+        <p>
+            To download the latest version of rite, head over to the <a target="_blank"
+                href='https://github.com/xyzshantaram/rite/releases/'>releases</a> page.
+        </p>
+
+        <ul>
+            <li>
+                If you are a Windows user, download the <code>.exe</code> file.
+            </li>
+            <li>
+                If you are a macOS user, download the <code>.dmg</code> file.
+            </li>
+            <li>
+                If you are a Debian/Ubuntu Linux user, download the <code>.deb</code> file.
+            </li>
+        </ul>
+
+        <p>
+            Double-click the downloaded file and install it as usual.
+        </p>
+
+        <p>
+            When you open rite for the first time, you will be greeted by a screen informing you of the location of the
+            new config file.
+        </p>
+
+        <div class='img-wrapper'>
+            <img alt='first launch' src='./img/first_launch.png'>
+        </div>
+
+        <p>
+            You can
+            <a target="_blank" href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+                title="Learn Markdown">write
+                Markdown</a>
+            in the blank editor window. Try making a heading! You can use arrows to navigate, and the following
+            shortcuts for common operations:
+        </p>
+
+        <ul id='keyboard-shortcuts'>
+            <li><kbd>Control-S</kbd> Save the current file.</li>
+            <li><kbd>Control-O</kbd> Open a file from your local disk.</li>
+            <li><kbd>Control-Alt-P</kbd> Open the command palette.</li>
+            <li><kbd>Control-I</kbd> Make the currently selected text italic.</li>
+            <li><kbd>Control-B</kbd> Make the currently selected text bold.</li>
+            <li><kbd>Control-Alt-D</kbd> Make the currently selected text struck through.</li>
+            <li><kbd>Control-Alt-1</kbd> Make the current line a Heading 1 (the largest heading size).</li>
+            <li><kbd>Control-Alt-2</kbd> Make the current line a Heading 2.</li>
+            <li><kbd>Control-Alt-3</kbd> Make the current line a Heading 3.</li>
+            <li><kbd>Control-Alt-4</kbd> Make the current line a Heading 4.</li>
+            <li><kbd>Control-Alt-5</kbd> Make the current line a Heading 5.</li>
+            <li><kbd>Control-Alt-6</kbd> Make the current line a Heading 6 (the smallest heading size).</li>
+            <li><kbd>Control-Shift-S</kbd> Save the current file under a new name.</li>
+            <li><kbd>Control-N</kbd> Create a new, blank file.</li>
+        </ul>
+        <p>On macOS, you can substitute <kbd>Control</kbd> with <kbd>Command</kbd> and <kbd>Alt</kbd> with
+            <kbd>Option</kbd>.
+        </p>
+
+        <div class='img-wrapper'>
+            <img alt='your first heading' src='./img/first_heading.png'>
+        </div>
+
+        <p>
+            Experiment with writing markdown. When you're done, it's time to save your work. Press <kbd>Ctrl-Alt-P</kbd>
+            (<kbd>Cmd+Option+P</kbd> on Macs) to bring up the command palette. Type "save" or use the arrow keys to
+            highlight "save", then press Enter.
+        </p>
+
+        <div class='img-wrapper'>
+            <img alt='saving in rite' src='./img/saving.png'>
+        </div>
+
+        <p>
+            You'll exclusively use the palette to interact with Rite. You can open files, create new files, save and
+            rename files, change settings, and use cloud functionality from here.
+        </p>
+
+        <p>
+            With this, you now have an understanding of how to use the Rite editor to edit and view markdown files.
+        </p>
+        <h3 id='customization'>Making it your own</h3>
+        <p>
+            Rite comes with a variety of customization options. You can change the font, font size, color theme (dark or
+            light), use spaces instead of tabs, change the tab size, disable line numbers, and editor orientation.
+        </p>
+
+        <p>
+            To change these settings, use the open_settings command in the command palette. This opens a view where you
+            can edit the settings. When done, select "Save settings and exit" to apply your changes.
+        </p>
+        <div class='img-wrapper'>
+            <img alt='a fully customized rite editor' src='./img/customized.png'>
+        </div>
+
+        <h3 id='rite-cloud'>Rite Cloud</h3>
+        <p>
+            Rite's sister application is a powerful backup solution called Rite Cloud. To use Rite Cloud, you'll need a
+            <a target="_blank" href='https://github.com/signup'>GitHub account</a>. With Rite Cloud, you can save and
+            load documents to
+            and from the cloud without ever leaving your editor.
+        </p>
+
+        <h4>Initial setup</h4>
+        <ol>
+            <li>Head over to the <a target="_blank" href='https://riteapp.co.in/home'>rite cloud homepage</a>.</li>
+            <li>Sign in with GitHub.</li>
+            <li>You'll be met with the rite homepage.</li>
+            <li>To connect your Rite editor to the cloud, head over to the "link a client" section.</li>
+            <li>
+                <div class='img-wrapper'>
+                    <img src="./img/linking.png" alt="Linking a client">
+                </div>
+
+                <p>Click the spoiler to view your token. <strong>Copy it now -- it won't be displayed again!</strong>
+                    This
+                    token is like a password - anyone who has it can upload documents on your behalf and view your
+                    private
+                    files. Don't share it with anyone!</p>
+                <p>
+                    Open the settings menu of your editor and enter your token into the "Rite Cloud token" field. Set
+                    the Rite Cloud URL to <code>https://riteapp.co.in</code> and the username field to your GitHub
+                    username.
+                </p>
+
+                <p>
+                    You can now save and load files to and from the cloud. If you feel your token for a client has been
+                    compromised, you can delete that client at any time by going to the "view linked clients" section of
+                    the web app.
+                </p>
+            </li>
+        </ol>
+
+        <h4>Documents in Rite Cloud</h4>
+        <p>
+            Rite organises files into documents and revisions. A revision is a specific point in the history of a
+            file. A document is a collection of revisions.
+        </p>
+
+        <h5>Uploading a document</h5>
+
+        <ol>
+            <li>Select the <code>cloud_save</code> option in the Rite command palette.</li>
+            <li>
+                <div class='img-wrapper'>
+                    <img src="./img/uploading.png" alt="Uploading a document">
+                </div>
+
+                Click 'Create new' to create a new document. Pick a name for the document, then choose a name for the
+                revision.
+                Version numbers, date-time pairs, or distinct names are all good options.
+            </li>
+            <li>
+                Choose the visibility of the document. Private documents can only be viewed by the owner (i.e. you),
+                while they are logged in. Public documents can be viewed by anyone who has the link. You can change this
+                later, so don't sweat it too much.
+            </li>
+            <li>
+                Click Confirm to finish uploading your document.
+            </li>
+        </ol>
+
+        <h5>Document operations</h5>
+        <div class='img-wrapper'>
+            <img src="./img/document-options.png" alt="Document operations">
+        </div>
+        <p>
+            Head to the "view documents" section of rite cloud to change the visibility of documents, get links to view
+            documents, or delete documents. If a document has more than one revision, an option to delete all revisions
+            is displayed.
+        </p>
+
+        <h5>Viewing documents</h5>
+        <div class='img-wrapper'>
+            <img src="./img/previewing.png" alt="Previewing documents">
+        </div>
+        <p>
+            While viewing a document, you can click the "View raw" link to view its raw markdown code. You can also
+            click "Print" to view a version of the page without any UI elements, for use as a pdf or for printing out.
+        </p>
+
+        <h5>Loading documents into the editor</h5>
+        <p>
+            You can load a document stored in Rite Cloud into any editor instance with a valid token for your account.
+        </p>
+        <ol>
+            <li>
+                <div class='img-wrapper'>
+                    <img src='./img/loading.png' alt='loading a document'>
+                </div>
+            </li>
+            <li>
+                Ensure that the document you are working on is saved. Then, open the command palette and select
+                <code>cloud_open</code>.
+            </li>
+            <li>
+                Select the document you want to open, and the Revision dropdown will be populated with a list of all the
+                revisions of that document. Click Confirm, and the contents of the document you selected will be placed
+                in the editor window for you to work on.
+            </li>
+        </ol>
+    </div>
+
+</body>
+
+</html>
