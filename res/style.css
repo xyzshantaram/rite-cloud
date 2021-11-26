@@ -115,7 +115,7 @@ pre {
     font-size: 1rem;
 }
 
-a {
+#md-rendered a {
     word-break: break-all;
 }
 
