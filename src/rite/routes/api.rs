@@ -66,7 +66,7 @@ pub async fn contents(mut req: Request<State>) -> tide::Result {
     res.insert_header("Access-Control-Allow-Origin", "*");
 
     match crate::rite::contents(&json.uuid, &mut db, Some(json.user)).await {
-        Ok(val) => res.set_body(json!({ "message": "Ok", "contents": val })),
+        Ok(doc) => res.set_body(json!({ "message": "Ok", "contents": doc.contents })),
         Err(kind) => match kind {
             ContentGetError::NotFound => {
                 res.set_status(StatusCode::NotFound);
