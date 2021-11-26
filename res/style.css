@@ -172,7 +172,7 @@ kbd {
     .img-wrapper>img {
         max-height: unset;
         height: auto;
-        max-width: 90vw;
+        max-width: 80vw;
         max-height: 60vh;
         padding: auto;
     }
