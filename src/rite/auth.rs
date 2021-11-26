@@ -61,7 +61,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             match session.insert("username", &res.login) {
                 Ok(_) => {
                     tide::log::info!("User authorised, redirecting...");
-                    Ok(Redirect::new("/").into())
+                    Ok(Redirect::new("/home").into())
                 }
                 Err(e) => render_error(
                     tera,
@@ -96,7 +96,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
 pub async fn logout(mut req: Request<State>) -> tide::Result {
     let session = req.session_mut();
     session.destroy();
-    Ok(Redirect::new("/").into())
+    Ok(Redirect::new("/home").into())
 }
 
 pub fn gh_oauth_client(cfg: &RiteConfig) -> tide::Result<BasicClient> {

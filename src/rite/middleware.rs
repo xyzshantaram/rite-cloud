@@ -20,7 +20,7 @@ impl WebAuthCheck {
     ) -> tide::Result {
         let session = req.session();
         if session.get::<String>("username").is_none() {
-            Ok(tide::Redirect::new("/").into())
+            Ok(tide::Redirect::new("/home").into())
         } else {
             Ok(next.run(req).await)
         }

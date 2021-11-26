@@ -51,7 +51,8 @@ async fn main() -> tide::Result<()> {
     }
 
     app.at("/res").serve_dir("res")?;
-    app.at("/").get(routes::homepage);
+    app.at("/").serve_file("res/landing.html")?;
+    app.at("/home").get(routes::homepage);
 
     let auth = {
         let mut app = tide::with_state(state.clone());

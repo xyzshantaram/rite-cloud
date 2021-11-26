@@ -5,3 +5,5 @@
 
 - admin page
 - add a toml config file
+- inbuilt ssl support
+- github actions build

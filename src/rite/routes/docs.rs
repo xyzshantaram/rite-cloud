@@ -118,7 +118,7 @@ pub async fn view(req: Request<State>) -> tide::Result {
             ContentGetError::Forbidden => render_error(
                 tera,
                 "Forbidden",
-                "You are not authorized to view the requested document.",
+                "You are not authorized to view the requested document. Ask the owner to make it public.",
                 StatusCode::Forbidden,
             ),
             ContentGetError::Unknown => render_error(
