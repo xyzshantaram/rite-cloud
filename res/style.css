@@ -26,19 +26,28 @@ html {
     font-weight: bold;
 }
 
+#content {
+    padding: 1rem;
+    padding-bottom: 1.5rem;
+}
+
 @keyframes blinking-ellipsis {
     0% {
         content: '';
     }
+
     25% {
         content: '.';
     }
+
     50% {
         content: '..';
     }
+
     75% {
         content: '...';
     }
+
     100% {
         content: '';
     }
@@ -145,9 +154,11 @@ code {
         width: 90vw;
         line-height: 1.4;
     }
+
     pre {
         margin: 0.1rem;
     }
+
     .img-wrapper>img {
         max-height: unset;
         height: auto;
@@ -215,9 +226,11 @@ details>summary {
     a:hover {
         color: #2049c7;
     }
+
     a:visited:hover {
         color: #2049c7;
     }
+
     input[type='text']:hover, input[type='submit']:hover {
         border-color: gray;
     }
@@ -228,27 +241,35 @@ details>summary {
         background: #202020;
         color: #f5f4f0;
     }
+
     pre {
         background: #505050;
     }
+
     a, a:visited {
         color: #4a8bf3;
     }
+
     span[class^='cyb-meta'] {
         color: #ccc;
     }
+
     code {
         background: #404040;
     }
+
     form>input {
         border-color: gray;
     }
+
     form>input:focus:not(:hover) {
         border-color: #f5f4f0;
     }
+
     form>input[type=submit]:active:not(:hover) {
         border-color: #f5f4f0;
     }
+
     input[type='text']:hover, input[type='submit']:hover {
         border-color: #aaaaaa;
     }
