@@ -103,7 +103,8 @@ pub async fn view(req: Request<State>) -> tide::Result {
                     "username" => username.unwrap_or_default(),
                     "section" => "view document",
                     "contents" => doc.contents,
-                    "title" => doc.name
+                    "title" => doc.name,
+                    "revision" => doc.revision
                 };
 
                 tera.render_response("view_document.html", &ctx)
