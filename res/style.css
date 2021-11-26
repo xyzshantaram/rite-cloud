@@ -62,7 +62,7 @@ html {
 
 body {
     max-width: 80ch;
-    font-family: "Courier Prime", monospace;
+    font-family: "Overpass Mono", monospace;
     width: 100%;
     margin-top: 5rem;
     line-height: 1.6;
@@ -121,6 +121,7 @@ pre {
 
 a, a:link, a:visited {
     transition-duration: 0.2s;
+    color: #4a8bf3;
 }
 
 a:active {
