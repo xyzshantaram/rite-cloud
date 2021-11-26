@@ -55,8 +55,9 @@ async fn main() -> tide::Result<()> {
 
     // static pages
     app.at("/").serve_file("res/landing.html")?;
+    app.at("/help/").serve_dir("res/docs")?;
+    app.at("/help").serve_file("res/docs/index.html")?;
     app.at("/help/").serve_file("res/docs/index.html")?;
-    app.at("/help").serve_dir("res/docs/")?;
 
     // homepage
     app.at("/home").get(routes::homepage);
