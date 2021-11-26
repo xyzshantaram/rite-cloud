@@ -92,17 +92,18 @@ pub async fn view(req: Request<State>) -> tide::Result {
     let tera = state.tera.clone();
 
     match contents(&uuid, &mut db, username.clone()).await {
-        Ok(val) => {
+        Ok(doc) => {
             if params.raw {
                 let mut res = Response::new(StatusCode::Ok);
                 res.set_content_type(mime::PLAIN);
-                res.set_body(val);
+                res.set_body(doc.contents);
                 Ok(res)
             } else {
                 let ctx = context! {
                     "username" => username.unwrap_or_default(),
                     "section" => "view document",
-                    "contents" => val
+                    "contents" => doc.contents,
+                    "title" => doc.name
                 };
 
                 tera.render_response("view_document.html", &ctx)

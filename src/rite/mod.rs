@@ -115,7 +115,7 @@ pub async fn contents(
     uuid: &str,
     db: &mut PoolConnection<Sqlite>,
     user: Option<String>,
-) -> Result<String, ContentGetError> {
+) -> Result<Document, ContentGetError> {
     let doc: Document =
         sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;")
             .bind(uuid)
@@ -124,8 +124,8 @@ pub async fn contents(
             .or(Err(ContentGetError::Unknown))?
             .ok_or(ContentGetError::NotFound)?;
 
-    if doc.public || user == Some(doc.user) {
-        Ok(doc.contents)
+    if doc.public || user == Some(doc.user.clone()) {
+        Ok(doc)
     } else {
         Err(ContentGetError::Forbidden)
     }
