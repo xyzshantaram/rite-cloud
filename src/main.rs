@@ -29,8 +29,8 @@ async fn main() -> tide::Result<()> {
         tera
     };
 
-    let session_db = db_connection("sqlite://./storage/sessions.db?mode=rwc".to_string()).await?;
-    let mut rite_db = db_connection("sqlite://./storage/rite.db?mode=rwc".to_string()).await?;
+    let session_db = db_connection(cfg.session_db_url.clone()).await?;
+    let mut rite_db = db_connection(cfg.rite_db_url.clone()).await?;
     initialise_db(&mut rite_db).await?;
 
     let state = State {

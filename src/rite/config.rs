@@ -7,7 +7,9 @@ pub struct RiteConfig {
     pub tide_secret: String,
     pub redirect_url: String,
     pub token_url: String,
-    pub file_limit: usize
+    pub file_limit: usize,
+    pub session_db_url: String,
+    pub rite_db_url: String,
 }
 
 impl RiteConfig {
@@ -32,7 +34,9 @@ impl RiteConfig {
         set(&mut self.redirect_url, "REDIRECT_URL")?;
         set(&mut self.tide_secret, "TIDE_SECRET")?;
         set(&mut self.token_url, "TOKEN_URL")?;
-        
+        set(&mut self.rite_db_url, "RITE_DB_URL")?;
+        set(&mut self.session_db_url, "SESSION_DB_URL")?;
+
         let mut tmp = String::default();
         set(&mut tmp, "FILE_LIMIT")?;
 
