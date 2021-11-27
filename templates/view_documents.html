@@ -6,7 +6,7 @@
 <p><strong><em>Note: </em></strong> Previewing documents online requires JavaScript.</p>
 <ul>
     {% for name, revisions in docs | sort(attribute="name") | group_by(attribute="name") %}
-    <li>
+    <li class='rite-document'>
         <strong>{{ name }}</strong>
         {% for revision in revisions %}
         <ul>

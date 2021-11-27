@@ -7,6 +7,10 @@ html {
     justify-content: center;
 }
 
+.rite-document {
+    margin-bottom: 1rem;
+}
+
 #md-raw {
     display: none;
 }
