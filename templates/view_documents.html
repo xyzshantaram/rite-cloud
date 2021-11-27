@@ -26,10 +26,12 @@
         </ul>
         {% endfor %}
         <div>
+            <div>
+                <strong>THIS CANNOT BE UNDONE:</strong>
+            </div>
             {% if revisions | length > 1 %}
             <a class='delete' href="/docs/delete/{{ name | urlencode_strict }}">
                 Delete all revisions of document "{{ name }}"</a>
-            (CANNOT BE UNDONE)
             {% endif %}
         </div>
     </li>
