@@ -28,26 +28,84 @@ it later.
 
 Once this is done, you'll need to set the following environment variables:
 
-- CLIENT_ID - The client ID of the GitHub app you created in the last step.
-- CLIENT_SECRET - The client secret you generated in the last step.
-- APP_URL - The local URL where you want your app to be, along with the port
+- `CLIENT_ID` - The client ID of the GitHub app you created in the last step.
+- `CLIENT_SECRET` - The client secret you generated in the last step.
+- `APP_URL` - The local URL where you want your app to be, along with the port
   number. For example: `127.0.0.1:8080`.
-- TOKEN_URL - The URL where the app will obtain its access token from. Set it to
-  `https://github.com/login/oauth/access_token`.
-- AUTH_URL - The URL where the app will use for authorization. Set it to
+- `TOKEN_URL` - The URL where the app will obtain its access token from. Set it
+  to `https://github.com/login/oauth/access_token`.
+- `AUTH_URL` - The URL where the app will use for authorization. Set it to
   `https://github.com/login/oauth/authorize`.
-- REDIRECT_URL - The URL that GitHub will redirect to on successful auth. It
+- `REDIRECT_URL` - The URL that GitHub will redirect to on successful auth. It
   should be the URL of where your app is hosted, followed by the string
   `/auth/github/authorized`. For example, the instance at https://riteapp.co.in
   has the REDIRECT_URL `https://riteapp.co.in/auth/github/authorized`
-- TIDE_SECRET - A string to use as the cookie signing secret. MUST be atleast 32
-  bytes long and should be cryptographically random to be secure.
-- DATABASE_URL - A path to an sqlite db (will be created if it doesn't exist)
+- `TIDE_SECRET` - A string to use as the cookie signing secret. MUST be atleast
+  32 bytes long and should be cryptographically random to be secure.
+- `DATABASE_URL` - A path to an sqlite db (will be created if it doesn't exist)
   that will be used as the rite database.
-- FILE_LIMIT - the maximum size of an upload request.
+- `FILE_LIMIT` - the maximum size of an upload request.
 
 Finally, run the app with `cargo run --release`. You should be able to open it
-by navigating to the APP_URL.
+by navigating to the `APP_URL`.
+
+#### systemd service
+
+To make your Rite Cloud instance start on boot, carry out the following steps:
+
+##### Symlink the necessary files
+
+```sh
+cd rite-cloud
+cargo build --release
+sudo mkdir /opt/rite-cloud
+sudo ln -s "$PWD/target/release/rite-cloud" "/opt/rite-cloud/rite-cloud"
+sudo chmod +x /opt/rite-cloud/rite-cloud # make it executable
+sudo ln -s "$PWD/res" "/opt/rite-cloud/res"
+sudo ln -s "$PWD/templates" "/opt/rite-cloud/templates"
+```
+
+##### Create a storage directory
+
+```sh
+sudo mkdir -p /opt/rite-cloud/storage
+```
+
+##### Set up the start script
+
+Open the `start-rite-cloud.sh` with your text editor of choice, and change it to
+include the required environment variables. Copy it to
+`/opt/rite-cloud/start-rite-cloud.sh`.
+
+```sh
+nano install-files/start-rite-cloud.sh
+sudo cp install-files/start-rite-cloud.sh /opt/rite-cloud/start-rite-cloud.sh
+```
+
+Make sure it is executable.
+
+```sh
+sudo chmod +x /opt/rite-cloud/start-rite-cloud.sh
+```
+
+##### Set up the systemd service
+
+Next, copy the `rite-cloud.service` file to `/etc/systemd/system` and give it
+the correct permissions.
+
+```sh
+sudo cp install-files/rite-cloud.service /etc/systemd/system/rite-cloud.service
+sudo chmod 644 /etc/systemd/system/rite-cloud.service
+```
+
+Finally, enable the service with `systemctl`.
+
+```sh
+sudo systemctl enable rite-cloud
+```
+
+You should now have an instance of rite-cloud set up that starts when your
+server does.
 
 ### Acknowledgements
 

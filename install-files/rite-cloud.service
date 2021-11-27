@@ -1,0 +1,9 @@
+[Unit]
+Description=Rite Cloud systemd service
+
+[Service]
+Type=simple
+ExecStart=/opt/rite-cloud/start-rite-cloud.sh
+
+[Install]
+WantedBy=multi-user.target
