@@ -161,7 +161,7 @@ kbd {
 
 @media screen and (max-aspect-ratio: 1/1) {
     body {
-        width: 90vw;
+        width: 95vw;
         line-height: 1.4;
     }
 
