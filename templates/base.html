@@ -65,11 +65,13 @@
                 <a href="/auth/github">login with GitHub</a>
                 {% endif %}
             </li>
+
+            {% if section == "home" %}
             <li>
-                {% if section == "home" %}
                 <a href='/'>Return to landing</a>
-                {% endif %}
             </li>
+            {% endif %}
+
             {% if username %}
             <li><a href="/clients/link">link a client</a></li>
             <li><a href="/clients/view">view linked clients</a></li>
