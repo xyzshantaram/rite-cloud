@@ -53,16 +53,16 @@ by navigating to the `APP_URL`.
 
 To make your Rite Cloud instance start on boot, carry out the following steps:
 
-##### Symlink the necessary files
+##### Copy files
 
 ```sh
 cd rite-cloud
 cargo build --release
 sudo mkdir /opt/rite-cloud
-sudo ln -s "$PWD/target/release/rite-cloud" "/opt/rite-cloud/rite-cloud"
+sudo cp "$PWD/target/release/rite-cloud" "/opt/rite-cloud/rite-cloud"
 sudo chmod +x /opt/rite-cloud/rite-cloud # make it executable
-sudo ln -s "$PWD/res" "/opt/rite-cloud/res"
-sudo ln -s "$PWD/templates" "/opt/rite-cloud/templates"
+sudo cp -r "$PWD/res" "/opt/rite-cloud/res"
+sudo cp -r "$PWD/templates" "/opt/rite-cloud/templates"
 ```
 
 ##### Create a storage directory
@@ -106,6 +106,26 @@ sudo systemctl enable rite-cloud
 
 You should now have an instance of rite-cloud set up that starts when your
 server does.
+
+#### Updating
+
+To update your rite-cloud instance, pull the latest copy of the source, build
+it, and then copy over the files to `/opt/rite-cloud` again.
+
+```sh
+cd rite-cloud
+git pull
+cargo build --release
+sudo cp "$PWD/target/release/rite-cloud" "/opt/rite-cloud/rite-cloud"
+sudo chmod +x /opt/rite-cloud/rite-cloud # make it executable
+sudo cp -r "$PWD/res" "/opt/rite-cloud/res"
+sudo cp -r "$PWD/templates" "/opt/rite-cloud/templates"
+```
+
+#### Uninstalling
+
+To uninstall, just disable the service, and remove the `/opt/rite-cloud` dir
+along with `/etc/systemd/system/rite-cloud.service`.
 
 ### Acknowledgements
 
