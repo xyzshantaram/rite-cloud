@@ -3,7 +3,7 @@ Description=Rite Cloud systemd service
 
 [Service]
 Type=simple
-ExecStart=/opt/rite-cloud/start-rite-cloud.sh
+ExecStart=/opt/rite-cloud/start-rite-cloud
 WorkingDirectory=/opt/rite-cloud
 
 [Install]

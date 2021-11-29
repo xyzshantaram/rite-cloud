@@ -73,13 +73,13 @@ sudo mkdir -p /opt/rite-cloud/storage
 
 ##### Set up the start script
 
-Copy the `start-rite-cloud.sh` script to `/opt/rite-cloud/start-rite-cloud.sh`.
-Open it with your editor of choice and edit it to add the required environment
+Copy the `start-rite-cloud` script to `/opt/rite-cloud/start-rite-cloud`. Open
+it with your editor of choice and edit it to add the required environment
 variables.
 
 ```sh
-sudo cp install-files/start-rite-cloud.sh /opt/rite-cloud/start-rite-cloud.sh
-sudo nano /opt/rite-cloud/start-rite-cloud.sh
+sudo cp install-files/start-rite-cloud /opt/rite-cloud/start-rite-cloud
+sudo nano /opt/rite-cloud/start-rite-cloud
 ```
 
 ##### Set up the systemd service
