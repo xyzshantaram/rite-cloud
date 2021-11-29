@@ -3,6 +3,7 @@ use crate::{
     State,
 };
 use http_types::{mime, StatusCode};
+use indexmap::IndexMap;
 use serde::Deserialize;
 use sqlx::{query::QueryAs, sqlite::SqliteArguments, Sqlite};
 use tide::{Redirect, Request, Response};
@@ -167,6 +168,20 @@ pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
     }
 }
 
+pub fn group_revisions_by_doc(revisions: &[Document]) -> IndexMap<String, Vec<Document>> {
+    let mut map: IndexMap<String, Vec<Document>> = IndexMap::new();
+    revisions.iter().for_each(|elem| {
+        let clone = elem.clone();
+        if map.contains_key(&elem.name) {
+            map.get_mut(&elem.name).unwrap().push(clone);
+        } else {
+            map.insert(elem.name.clone(), vec![clone]);
+        }
+    });
+
+    map
+}
+
 pub async fn list(req: Request<State>) -> tide::Result {
     let state = req.state();
     let session = req.session();
@@ -175,7 +190,7 @@ pub async fn list(req: Request<State>) -> tide::Result {
 
     if let Some(val) = session.get::<String>("username") {
         let username = val;
-        let rows: Vec<Document> = sqlx::query_as::<Sqlite, Document>(
+        let mut rows: Vec<Document> = sqlx::query_as::<Sqlite, Document>(
             "SELECT name, contents, revision, user, public, uuid from documents where user = ?;",
         )
         .bind(&username)
@@ -185,7 +200,11 @@ pub async fn list(req: Request<State>) -> tide::Result {
         let mut context = context! {
             "section" => "view documents"
         };
-        context.try_insert("docs", &rows)?;
+
+        rows.sort_by_key(|e| e.name.to_lowercase());
+        let docs = group_revisions_by_doc(&rows);
+
+        context.try_insert("docs", &docs)?;
         context.try_insert("username", &username)?;
 
         tera.render_response("view_documents.html", &context)

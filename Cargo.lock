@@ -1673,6 +1673,7 @@ checksum = "bc633605454125dec4b66843673f01c7df2b89479b32e0ed634e43a91cff62a5"
 dependencies = [
  "autocfg 1.0.1",
  "hashbrown 0.11.2",
+ "serde",
 ]
 
 [[package]]
@@ -2650,6 +2651,7 @@ dependencies = [
  "async-std",
  "http-types",
  "hyper-native-tls",
+ "indexmap",
  "oauth2",
  "serde",
  "serde_json",
@@ -2785,6 +2787,7 @@ version = "1.0.68"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0f690853975602e1bfe1ccbf50504d67174e3bcf340f23b5ea9992e0587a52d8"
 dependencies = [
+ "indexmap",
  "itoa",
  "ryu",
  "serde",

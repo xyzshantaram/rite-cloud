@@ -5,7 +5,7 @@
 <h2>Your documents</h2>
 <p><strong><em>Note: </em></strong> Previewing documents online requires JavaScript.</p>
 <ul>
-    {% for name, revisions in docs | group_by(attribute="name") %}
+    {% for name, revisions in docs %}
     <li class='rite-document'>
         <strong>{{ name }}</strong>
         {% for revision in revisions %}
@@ -21,6 +21,9 @@
                     Visibility: <strong>{% if revision.public %}Public{% else %}Private{% endif %}</strong></a>
                     <a href="/docs/toggle-visibility/{{ revision.uuid | urlencode_strict }}">
                         ({% if revision.public %}Make private{% else %}Make public{% endif %})</a>
+                </div>
+                <div>
+                    Added on <strong>{{ revision.added_on }}</strong>
                 </div>
             </li>
         </ul>
