@@ -82,12 +82,6 @@ sudo cp install-files/start-rite-cloud.sh /opt/rite-cloud/start-rite-cloud.sh
 sudo nano /opt/rite-cloud/start-rite-cloud.sh
 ```
 
-Make sure it is executable.
-
-```sh
-sudo chmod +x /opt/rite-cloud/start-rite-cloud.sh
-```
-
 ##### Set up the systemd service
 
 Next, copy the `rite-cloud.service` file to `/etc/systemd/system` and give it
@@ -117,7 +111,6 @@ cd rite-cloud
 git pull
 cargo build --release
 sudo cp "$PWD/target/release/rite-cloud" "/opt/rite-cloud/rite-cloud"
-sudo chmod +x /opt/rite-cloud/rite-cloud # make it executable
 sudo cp -r "$PWD/res" "/opt/rite-cloud/res"
 sudo cp -r "$PWD/templates" "/opt/rite-cloud/templates"
 ```

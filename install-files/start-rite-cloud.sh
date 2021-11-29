@@ -13,5 +13,4 @@ export RITE_DB_URL="sqlite:///opt/rite-cloud/storage/rite.db?mode=rwc"
 export SESSION_DB_URL="sqlite:///opt/rite-cloud/storage/sessions.db?mode=rwc"
 
 echo "Starting rite-cloud..."
-cd /opt/rite-cloud/
 /opt/rite-cloud/rite-cloud
