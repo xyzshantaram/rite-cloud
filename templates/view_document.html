@@ -17,6 +17,13 @@
     import { marked } from 'https://esm.sh/marked';
     import DOMPurify from 'https://esm.sh/dompurify';
 
+    const addCheckBox = (str) => {
+        if (/^\s*\[.?\].*$/.test(str)) {
+            return str.replace(/^\[ ?\]/, '<input type="checkbox">').replace(/^\[[^ ]\]/, '<input type="checkbox" checked>')
+        }
+        return str;
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
         const loading = document.querySelector("#loading");
         const raw = document.querySelector("#md-raw");
@@ -30,6 +37,26 @@
         const hidden = [];
         const result = document.createElement("div");
         result.id = 'md-rendered';
+
+        const renderer = {
+            listitem: (text) => {
+                return `<li>${addCheckBox(text)}</li>\n`;
+            },
+            image: (href, title, text) => {
+                console.log(href, title, text)
+                let out = `<div class='img-wrapper'><img src='${href}' alt='${text}'`
+
+                if (title) {
+                    out += ` title=${title}`;
+                }
+
+                out += ">";
+                out += '</div>';
+                return out;
+            }
+        }
+
+        marked.use({ renderer });
 
         window.onbeforeprint = () => {
             let toHide = [...Array.from(document.querySelectorAll("body>*:not(#content)")), print, rawLink];
