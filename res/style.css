@@ -152,7 +152,17 @@ kbd {
 
 .img-wrapper {
     width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.img-description {
     text-align: center;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: grey;
 }
 
 .img-wrapper>img {
