@@ -22,9 +22,6 @@
                     <a href="/docs/toggle-visibility/{{ revision.uuid | urlencode_strict }}">
                         ({% if revision.public %}Make private{% else %}Make public{% endif %})</a>
                 </div>
-                <div>
-                    Added on <strong>{{ revision.added_on }}</strong>
-                </div>
             </li>
         </ul>
         {% endfor %}
