@@ -134,6 +134,7 @@ a:active {
 
 pre>code {
     background: inherit;
+    padding: 0;
 }
 
 code {
@@ -148,6 +149,7 @@ kbd {
     color: white;
     border-radius: 0.4rem;
     padding: 0.15rem;
+    margin: 0.15rem;
 }
 
 .img-wrapper {
