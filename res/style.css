@@ -162,7 +162,8 @@ kbd {
     text-align: center;
     font-style: italic;
     font-size: 0.9rem;
-    color: grey;
+    color: #666666;
+    margin-top: 0.3rem;
 }
 
 .img-wrapper>img {
