@@ -8,7 +8,7 @@
 
 <a id='raw-link' href='?raw=true'>View raw</a>
 <a href='javascript:void(0)' id='print'>Print</a>
-<div id='md-raw'>{{ contents }}</div>
+<div id='md-raw'>{{ contents | json_encode() }}</div>
 <div id='loading'>
     Loading
 </div>
@@ -16,6 +16,8 @@
 <script type='module'>
     import { marked } from 'https://esm.sh/marked';
     import DOMPurify from 'https://esm.sh/dompurify';
+    import { highlight, HL_KEYWORDS } from 'https://esm.sh/macrolight';
+    import { escape, unescape } from 'https://esm.sh/campfire.js';
 
     const addCheckBox = (str) => {
         if (/^\s*\[.?\].*$/.test(str)) {
@@ -43,7 +45,6 @@
                 return `<li>${addCheckBox(text)}</li>\n`;
             },
             image: (href, title, text) => {
-                console.log(href, title, text)
                 let out = `<div class='img-wrapper'><img src='${href}' alt='${text}'`
 
                 if (title) {
@@ -56,6 +57,24 @@
 
                 out += '</div>';
                 return out;
+            },
+            code: (code, lang_, escaped) => {
+                const langMatches = (lang_ || '').match(/\S*/);
+                let lang = '';
+                if (langMatches) {
+                    lang = langMatches[0];
+                }
+                if (lang) {
+                    code = highlight(code, {
+                        keywords: HL_KEYWORDS[lang] || [],
+                        styles: {
+                            punctuation: 'color: #aaa;',
+                            comment: 'color: #aaa;'
+                        }
+                    });
+                    escaped = true;
+                }
+                return `\n<pre><code>${(escaped ? code : escape(code, true))}</code></pre>\n`;
             }
         }
 
@@ -84,7 +103,7 @@
             document.body.style.marginTop = '5rem';
         }
 
-        let rendered = marked.parse(raw.innerHTML);
+        let rendered = marked.parse(unescape(JSON.parse(raw.innerHTML)));
         result.innerHTML = DOMPurify.sanitize(rendered);
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
