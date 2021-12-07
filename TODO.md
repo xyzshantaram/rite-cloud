@@ -7,3 +7,6 @@
 - add a toml config file
 - inbuilt ssl support
 - github actions build
+- add a "newer version of this doc exists" message
+- encryption?
+- store place user was on before login
