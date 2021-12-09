@@ -171,6 +171,125 @@
             <img alt='a fully customized rite editor' src='/help/img/customized.png'>
         </div>
 
+        <h4>Advanced customization options</h4>
+
+        <p>
+            You can also change the default keyboard shortcuts and colors by editing the rite config file.
+            Although this is moderately difficult, you are encouraged to try hacking the editor and truly
+            making it your own!
+        </p>
+
+        <p>To get started, find out where your config file is. This is displayed in the editor's About menu. Open the
+            about menu from the Command Palette. Copy the config file path from here.</p>
+
+        <div class="img-wrapper">
+            <img src="/help/img/about-menu.png" alt="Finding your config file">
+        </div>
+
+        <p>
+            <strong>Important</strong> Close the editor before continuing to edit the config file. If you don't close
+            it, your changes will be overwritten the next time you close rite or update your settings within the editor.
+        </p>
+
+        <p>
+            Open the config file in a text editor. You can use any text editor to do this, though it is highly
+            recommended to use a programmer's text editor like
+            <a href='https://notepad-plus-plus.org/'>Notepad++</a> or
+            <a href='https://code.visualstudio.com'>Visual Studio Code</a>.
+        </p>
+
+        <p>
+            Here, you can edit the keybinds and set custom colors.
+        </p>
+
+        <h5>Editing keybinds</h5>
+
+        <p>
+            A keybind is a string consisting of a set of
+            characters, then a +, then a single character more. The first set of characters represents the modifier keys
+            that must be held down to activate the shortcut, and the character after the plus represents what key must
+            be pressed to activate the shortcut.
+        </p>
+
+        <p>
+            For example, <code>CSA+n</code> means that you need to hold <kbd>Ctrl</kbd> (<kbd>Cmd</kbd> on Macs),
+            <kbd>Shift</kbd>, <kbd>Alt</kbd> (<kbd>Option</kbd> on Macs)
+            and then press the <kbd>n</kbd> key.
+        </p>
+
+        <p>
+            Now, to change a shortcut, simply change the <code><i>XYZ</i>+<i>k</i></code> string next to the command
+            you want to change the shortcut of.
+        </p>
+
+        <h5>Editing colors</h5>
+
+        <p>
+            To add custom colors to rite, add a new key to the JSON file. Put a comma after whatever the last value is,
+            and then type <code>"custom_styles": {}</code>
+        </p>.
+
+        <p>
+            You can set none, some, or all of the following values. All <a
+                href='https://www.w3schools.com/cssref/css_colors_legal.asp'>CSS
+                color values</a> are allowed.
+        </p>
+
+        <ul>
+            <li><code>background-ui</code> The background color of UI dialogs.</li>
+            <li><code>ui-elem-bg</code> The background color of certain UI elements.</li>
+            <li><code>ui-elem-fg</code> The foreground color of certain UI elements.</li>
+            <li><code>background-root</code> The background color of the root pane.</li>
+            <li><code>background-main</code> The main background color of the editable area.</li>
+            <li><code>color-auxiliary</code> Color of auxilliary information.</li>
+            <li><code>color-primary</code> Primary text color.</li>
+            <li><code>color-secondary</code> Secondary text color. Also the text color of normal editor text.</li>
+            <li><code>color-selection</code> Color of selection backgrounds. Should be a translucent color.</li>
+            <li><code>color-md-heading</code> Color of markdown headings.</li>
+            <li><code>color-md-link</code> Color of links.</li>
+            <li><code>color-md-url</code> Color of link URLs.</li>
+            <li><code>color-md-bullet</code> Color of text in bullet points.</li>
+            <li><code>color-md-quote</code> Color of markdown quotes.</li>
+            <li><code>color-cm-html</code> Color of HTML tags.</li>
+            <li><code>color-md-string</code> Color of strings</li>
+            <li><code>color-cm-keyword</code> Color of keywords in code blocks</li>
+            <li><code>color-cm-meta</code> Color of language metadata, etc in code blocks</li>
+            <li><code>color-cm-bracket</code> Bracket color in code blocks</li>
+            <li><code>color-cm-builtin</code> Color of language builtins in code blocks</li>
+            <li><code>color-cm-type</code> Color of types in code blocks</li>
+            <li><code>color-cm-atom</code> Color of constants such as <code>true</code>, <code>false</code>,
+                <code>null</code>, etc
+            </li>
+        </ul>
+
+        <p>Once you're done, it should look something like this:</p>
+
+        <div class="img-wrapper">
+            <img src="/help/img/config-changed.png" alt="Config file after setting colors">
+        </div>
+
+        <p>
+            If you want to check that you've edited the file correctly, run it through an online JSON validator like
+            <a href='https://jsonformatter.org/'>this one</a>. It should report no errors.
+        </p>
+
+        <p>Save your changes and close your editor, then reopen Rite. It should be using your changed settings!</p>
+
+        <div class="img-wrapper">
+            <img src="/help/img/config-changed-result.png" alt="Result of config changes">
+        </div>
+
+        <p>
+            If you made a mistake and the config is invalid, you'll see a dialog like the following. Use a JSON
+            validator tool to figure out what went wrong, and change it. If you're unable to figure it out,
+            don't worry - just delete the <code>config.json</code> file (or move it out of the folder it's in) and
+            Rite will make a new one for you.
+        </p>
+
+        <div>
+            <img src="/help/img/config-change-error.png" alt="Config error message">
+        </div>
+
         <h3 id='rite-cloud'>Rite Cloud</h3>
         <p>
             Rite's sister application is a powerful backup solution called Rite Cloud. To use Rite Cloud, you'll need a
@@ -333,6 +452,11 @@
 
         <h3>Thank you!</h3>
         <p>You're now ready to use Rite. Thank you for reading this far, and thank you for choosing Rite.</p>
+        <p>
+            Remember that you can view this guide at anytime by navigating to
+            <a href='https://riteapp.co.in/help'><code>https://riteapp.co.in/help</code></a>, or opening the
+            Command Palette of your editor and selecting the "Help" option.
+        </p>
     </div>
 
 </body>
