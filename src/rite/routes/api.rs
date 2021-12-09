@@ -119,7 +119,7 @@ pub async fn upload(mut req: Request<State>) -> tide::Result {
             .bind(uuid.to_string())
             .execute(&mut db)
             .await?;
-        res.set_body(json!({ "message": "Ok" }));
+        res.set_body(json!({ "message": "Ok", "uuid": uuid.to_string() }));
     } else {
         res.set_status(StatusCode::Conflict);
         res.set_body(json!({ "message": "Duplicate revision." }));
