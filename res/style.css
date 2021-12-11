@@ -245,6 +245,41 @@ details>summary {
     font-weight: bold;
 }
 
+.cyblog-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    border: 1px solid #999999;
+    border-spacing: 0;
+    border-radius: 0.2rem;
+}
+
+td, th {
+    padding: 0.4rem;
+    border-right: 1px solid #bbbbbb;
+    border-bottom: 1px solid #bbbbbb;
+    margin: 0;
+}
+
+th {
+    border-color: #999999;
+}
+
+td:last-child, th:last-child {
+    border-right: none;
+}
+
+tr:last-child>td {
+    border-bottom: none;
+}
+
+thead {
+    margin: 0;
+    padding: 0;
+}
+
 .client-title {
     font-size: 1.4rem;
 }

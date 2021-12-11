@@ -11,3 +11,5 @@
 - encryption?
 - store place user was on before login
 - send back uuid of newly uploaded doc
+- semver things
+- show version or git commit hash on pages
