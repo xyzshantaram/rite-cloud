@@ -245,7 +245,7 @@ details>summary {
     font-weight: bold;
 }
 
-.cyblog-table-wrapper {
+.table-wrapper {
     max-width: 100%;
     overflow-x: auto;
 }
@@ -310,10 +310,6 @@ thead {
 
     a, a:visited {
         color: #4a8bf3;
-    }
-
-    span[class^='cyb-meta'] {
-        color: #ccc;
     }
 
     code {

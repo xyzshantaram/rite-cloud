@@ -17,7 +17,20 @@
     import { marked } from 'https://esm.sh/marked';
     import DOMPurify from 'https://esm.sh/dompurify';
     import { highlight, HL_KEYWORDS } from 'https://esm.sh/macrolight';
-    import { escape, unescape } from 'https://esm.sh/campfire.js';
+    import { escape, unescape, mustache } from 'https://esm.sh/campfire.js';
+
+    const TABLE_MARKUP = `\
+<div class='table-wrapper'>
+<table>
+<thead>
+{{ header }}
+</thead>
+<tbody>
+{{ body }}
+</tbody>
+</table>
+</div>
+`;
 
     const addCheckBox = (str) => {
         if (/^\s*\[.?\].*$/.test(str)) {
@@ -75,6 +88,12 @@
                     escaped = true;
                 }
                 return `\n<pre><code>${(escaped ? code : escape(code, true))}</code></pre>\n`;
+            },
+            table: (header, body) => {
+                return mustache(TABLE_MARKUP, {
+                    header: header,
+                    body: body
+                });
             }
         }
 
