@@ -125,6 +125,7 @@ along with `/etc/systemd/system/rite-cloud.service`.
 - [async-sqlx-session](async-sqlx-session) used under the terms of the MIT
   license. I've temporarily forked it to fix the version of async-session until
   Tide updates with the correct fixes to the SQLite session middleware.
+- Inconsolata and Crimson Pro used under the OFL
 
 ### Contributing
 
