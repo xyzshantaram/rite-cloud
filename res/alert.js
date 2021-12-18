@@ -1,5 +1,5 @@
-const ALERT_EMPTY_FIELD = 0;
-const ALERT_CANCELLED = 1;
+const ALERT_EMPTY_FIELD = 'Field was empty.';
+const ALERT_CANCELLED = 'Cancelled by user.';
 
 function alert_CreateElement(parent, tag, className, id, innerHTML, misc) {
     let elem = document.createElement(tag);

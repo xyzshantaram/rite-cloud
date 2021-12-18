@@ -29,6 +29,10 @@
     font-size: 1.2em;
 }
 
+#alert>input {
+    display: block;
+}
+
 #alert-header,
 #alert-footer {
     width: 90%;

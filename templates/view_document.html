@@ -66,8 +66,7 @@
                 mdContents = AESDecrypt(mdContents, passphrase);
             }
             catch (e) {
-                await alertjs.promises.message('Error decrypting data.', `<details><summary>Error decrypting data - did you enter the right password?</summary>${e}</details>`);
-                hideAlert();
+                await alertjs.promises.message('Error decrypting data.', `Error decrypting data - did you enter the right password?<pre>${e}</pre>`);
             }
         }
 
