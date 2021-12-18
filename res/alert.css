@@ -1,6 +1,7 @@
 #cf-alert {
     width: 40%;
-    background: white;
+    background: #f5f4f0;
+    color: #202020;
     border-radius: 0.2rem;
     max-height: 100%;
     overflow: auto;
