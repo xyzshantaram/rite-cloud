@@ -1,104 +1,70 @@
-.v-flex-centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-#alert-mask {
-    display: none;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
-    z-index: 10000000;
-    background: rgba(0, 0, 0, .80);
-    position: fixed;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-#alert {
-    width: 35%;
-    min-height: 40%;
+#cf-alert {
+    width: 40%;
     background: white;
-    border-radius: 0.25em;
-    flex-direction: column;
-    padding-bottom: 1em;
-    font-size: 1.2em;
+    border-radius: 0.2rem;
+    max-height: 100%;
+    overflow: auto;
 }
 
-#alert>input {
+#alert-header, #alert-footer {
+    padding: 1rem;
+}
+
+#alert-body>input {
     display: block;
-}
-
-#alert-header,
-#alert-footer {
-    width: 90%;
-    height: 10%;
-}
-
-#alert-header {
-    padding: 1.4em;
-    padding-left: 2em;
-    text-align: left;
-    font-size: 1.2em;
-    font-weight: bold;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 #alert-body {
-    width: 90%;
-    height: 80%;
-    text-align: left;
-    padding-left: 2em;
-    padding-right: 1.3em;
+    padding-left: 1rem;
 }
 
 #alert-footer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-bottom: 0.5em;
-    margin-top: 1em;
-    margin-right: 0;
+    text-align: right;
 }
 
-@media only screen and (max-aspect-ratio: 5/3) {
-    #alert {
-        width: 45%;
+#alert-header {
+    font-weight: bold;
+}
+
+#alert-ok {
+    color: white;
+    background-color: #007cdf;
+    border: none;
+    padding: 0.5rem;
+    min-width: 10ch;
+    border-radius: 0.2rem;
+}
+
+#alert-cancel {
+    color: white;
+    background-color: #978e0f;
+    border: none;
+    padding: 0.5rem;
+    min-width: 10ch;
+    border-radius: 0.2rem;
+}
+
+#alert-cancel, #alert-ok {
+    cursor: pointer;
+    margin: 0.2rem;
+}
+
+@media not all and (hover: none) {
+    #alert-cancel:hover, #alert-ok:hover {
+        filter: brightness(1.2);
     }
 }
 
-@media only screen and (max-aspect-ratio: 9/14) {
-    #alert {
-        width: 60%;
+@media only screen and (max-aspect-ratio: 1/1) {
+    #cf-alert {
+        width: 70%;
     }
 }
 
 @media only screen and (max-aspect-ratio: 9/16) {
-    #alert {
-        width: 80%;
-        height: auto;
-    }
-}
-
-@keyframes pop {
-    from {
-        transform: scale(0);
-    }
-
-    to {
-        transform: scale(1);
-    }
-}
-
-@keyframes fade-out {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
+    #cf-alert {
+        width: 90%;
     }
 }

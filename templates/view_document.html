@@ -6,9 +6,6 @@
 
 {% block content %}
 
-<script src='/res/alert.js'></script>
-<link rel='stylesheet' href='/res/alert.css'>
-
 <a id='raw-link' href='?raw=true'>View raw</a>
 <a href='javascript:void(0)' id='print'>Print</a>
 <div id='md-raw' data-encrypted="{{ encrypted }}">{{ contents | json_encode() }}</div>
@@ -16,12 +13,15 @@
     Loading
 </div>
 
+<link rel='stylesheet' href='/res/alert.css'>
+
 <script type='module'>
     import { marked } from 'https://esm.sh/marked';
     import DOMPurify from 'https://esm.sh/dompurify';
     import { highlight, HL_KEYWORDS } from 'https://esm.sh/macrolight';
     import { escape, unescape, mustache } from 'https://esm.sh/campfire.js';
     import CryptoJS from 'https://esm.sh/crypto-js';
+    import alerts from 'https://esm.sh/cf-alert';
     // {% raw %}
     const TABLE_MARKUP = `\
 <div class='table-wrapper'>
@@ -45,7 +45,6 @@
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
-        initialiseAlert();
         const loading = document.querySelector("#loading");
         const raw = document.querySelector("#md-raw");
         const print = document.querySelector('#print');
@@ -62,11 +61,11 @@
 
         if (raw.getAttribute('data-encrypted') === 'true') {
             try {
-                let passphrase = await alertjs.promises.prompt('Enter passphrase', 'This document is encrypted. Enter the passphrase to decrypt it.');
+                let passphrase = await alerts.input('password', 'This document is encrypted. Enter the passphrase to decrypt it.');
                 mdContents = AESDecrypt(mdContents, passphrase);
             }
             catch (e) {
-                await alertjs.promises.message('Error decrypting data.', `Error decrypting data - did you enter the right password?<pre>${e}</pre>`);
+                await alerts.message(`Error decrypting data: ${e}`, 'Error');
             }
         }
 
