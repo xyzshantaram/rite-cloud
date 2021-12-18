@@ -100,13 +100,14 @@ pub async fn view(req: Request<State>) -> tide::Result {
                 res.set_body(doc.contents);
                 Ok(res)
             } else {
+                let encrypted = doc.encrypted.unwrap_or(false);
                 let ctx = context! {
                     "username" => username.unwrap_or_default(),
                     "section" => "view document",
                     "contents" => doc.contents,
                     "title" => doc.name,
                     "revision" => doc.revision,
-                    "encrypted" => doc.encrypted
+                    "encrypted" => encrypted
                 };
 
                 tera.render_response("view_document.html", &ctx)

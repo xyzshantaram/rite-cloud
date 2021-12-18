@@ -44,7 +44,7 @@ pub struct Document {
     pub user: String,
     pub public: bool,
     pub uuid: String,
-    pub encrypted: bool,
+    pub encrypted: Option<bool>,
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
@@ -54,7 +54,7 @@ pub struct DocumentMetadata {
     pub user: String,
     pub public: bool,
     pub uuid: String,
-    pub encrypted: bool,
+    pub encrypted: Option<bool>,
 }
 
 pub enum ContentGetError {

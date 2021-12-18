@@ -14,7 +14,7 @@ pub struct UploadRequest {
     pub token: String,
     pub user: String,
     pub public: bool,
-    pub encrypted: bool,
+    pub encrypted: Option<bool>,
 }
 
 #[derive(Clone, Debug, serde::Deserialize)]
@@ -66,9 +66,12 @@ pub async fn contents(mut req: Request<State>) -> tide::Result {
     res.insert_header("Access-Control-Allow-Origin", "*");
 
     match crate::rite::contents(&json.uuid, &mut db, Some(json.user)).await {
-        Ok(doc) => res.set_body(
-            json!({ "message": "Ok", "contents": doc.contents, "encrypted": doc.encrypted }),
-        ),
+        Ok(doc) => {
+            let encrypted = doc.encrypted.unwrap_or(false);
+            res.set_body(
+                json!({ "message": "Ok", "contents": doc.contents, "encrypted": encrypted }),
+            )
+        }
         Err(kind) => match kind {
             ContentGetError::NotFound => {
                 res.set_status(StatusCode::NotFound);
@@ -118,7 +121,7 @@ pub async fn upload(mut req: Request<State>) -> tide::Result {
             .bind(&body.contents)
             .bind(if body.public { 1 } else { 0 })
             .bind(uuid.to_string())
-            .bind(if body.encrypted { 1 } else { 0 })
+            .bind(if body.encrypted.unwrap_or(false) { 1 } else { 0 })
             .execute(&mut db)
             .await?;
         res.set_body(json!({ "message": "Ok", "uuid": uuid.to_string() }));
