@@ -44,6 +44,7 @@ pub struct Document {
     pub user: String,
     pub public: bool,
     pub uuid: String,
+    pub encrypted: bool,
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
@@ -53,6 +54,7 @@ pub struct DocumentMetadata {
     pub user: String,
     pub public: bool,
     pub uuid: String,
+    pub encrypted: bool,
 }
 
 pub enum ContentGetError {
@@ -81,6 +83,7 @@ impl FromRow<'_, SqliteRow> for Document {
             user: row.try_get("user")?,
             public: row.try_get("public")?,
             uuid: row.try_get("uuid")?,
+            encrypted: row.try_get("encrypted")?,
         })
     }
 }
@@ -93,6 +96,7 @@ impl FromRow<'_, SqliteRow> for DocumentMetadata {
             user: row.try_get("user")?,
             public: row.try_get("public")?,
             uuid: row.try_get("uuid")?,
+            encrypted: row.try_get("encrypted")?,
         })
     }
 }

@@ -8,7 +8,6 @@
 - inbuilt ssl support
 - github actions build
 - add a "newer version of this doc exists" message
-- encryption?
 - store place user was on before login
 - send back uuid of newly uploaded doc
 - semver things

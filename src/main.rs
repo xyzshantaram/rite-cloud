@@ -148,8 +148,7 @@ async fn build_session_middleware(
 
 async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
     sqlx::query(
-        "
-    CREATE TABLE IF NOT EXISTS clients (
+        "CREATE TABLE IF NOT EXISTS clients (
         uuid TEXT UNIQUE,
         token TEXT,
         user TEXT,
@@ -161,8 +160,7 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
     .await?;
 
     sqlx::query(
-        "
-    CREATE TABLE IF NOT EXISTS pending_clients (
+        "CREATE TABLE IF NOT EXISTS pending_clients (
         token TEXT UNIQUE,
         user TEXT,
         added_on DATETIME
@@ -172,15 +170,15 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
     .await?;
 
     sqlx::query(
-        "
-    CREATE TABLE IF NOT EXISTS documents (
+        "CREATE TABLE IF NOT EXISTS documents (
         name TEXT,
         user TEXT,
         revision TEXT,
         contents TEXT,
         public BOOLEAN,
         added_on DATETIME,
-        uuid TEXT UNIQUE
+        uuid TEXT UNIQUE,
+        encrypted INT default 0
     )",
     )
     .execute(&mut db.acquire().await?)

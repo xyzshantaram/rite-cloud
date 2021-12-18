@@ -105,7 +105,8 @@ pub async fn view(req: Request<State>) -> tide::Result {
                     "section" => "view document",
                     "contents" => doc.contents,
                     "title" => doc.name,
-                    "revision" => doc.revision
+                    "revision" => doc.revision,
+                    "encrypted" => doc.encrypted
                 };
 
                 tera.render_response("view_document.html", &ctx)
@@ -190,12 +191,11 @@ pub async fn list(req: Request<State>) -> tide::Result {
 
     if let Some(val) = session.get::<String>("username") {
         let username = val;
-        let mut rows: Vec<Document> = sqlx::query_as::<Sqlite, Document>(
-            "SELECT name, contents, revision, user, public, uuid from documents where user = ?;",
-        )
-        .bind(&username)
-        .fetch_all(&mut db)
-        .await?;
+        let mut rows: Vec<Document> =
+            sqlx::query_as::<Sqlite, Document>("SELECT * from documents where user = ?;")
+                .bind(&username)
+                .fetch_all(&mut db)
+                .await?;
 
         let mut context = context! {
             "section" => "view documents"

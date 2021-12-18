@@ -14,6 +14,7 @@ pub struct UploadRequest {
     pub token: String,
     pub user: String,
     pub public: bool,
+    pub encrypted: bool,
 }
 
 #[derive(Clone, Debug, serde::Deserialize)]
@@ -34,12 +35,11 @@ pub async fn list(mut req: Request<State>) -> tide::Result {
     let mut db = state.rite_db.acquire().await?;
     let body: BasicClientRequest = req.body_json().await?;
 
-    let rows: Vec<DocumentMetadata> = sqlx::query_as::<Sqlite, DocumentMetadata>(
-        "SELECT name, revision, user, public, uuid from documents where user = ?;",
-    )
-    .bind(&body.user)
-    .fetch_all(&mut db)
-    .await?;
+    let rows: Vec<DocumentMetadata> =
+        sqlx::query_as::<Sqlite, DocumentMetadata>("SELECT * from documents where user = ?;")
+            .bind(&body.user)
+            .fetch_all(&mut db)
+            .await?;
 
     let mut res = Response::new(StatusCode::Ok);
     res.set_content_type(mime::JSON);
@@ -66,7 +66,9 @@ pub async fn contents(mut req: Request<State>) -> tide::Result {
     res.insert_header("Access-Control-Allow-Origin", "*");
 
     match crate::rite::contents(&json.uuid, &mut db, Some(json.user)).await {
-        Ok(doc) => res.set_body(json!({ "message": "Ok", "contents": doc.contents })),
+        Ok(doc) => res.set_body(
+            json!({ "message": "Ok", "contents": doc.contents, "encrypted": doc.encrypted }),
+        ),
         Err(kind) => match kind {
             ContentGetError::NotFound => {
                 res.set_status(StatusCode::NotFound);
@@ -109,14 +111,14 @@ pub async fn upload(mut req: Request<State>) -> tide::Result {
     let uuid = Uuid::new_v4();
 
     if doc.is_none() {
-        let public = if body.public { 1 } else { 0 };
-        sqlx::query("insert into documents(name, user, revision, contents, public, added_on, uuid) values(?, ?, ?, ?, ?, datetime('now'), ?);")
+        sqlx::query("insert into documents(name, user, revision, contents, public, added_on, uuid, encrypted) values(?, ?, ?, ?, ?, datetime('now'), ?, ?);")
             .bind(&body.name)
             .bind(&body.user)
             .bind(&body.revision)
             .bind(&body.contents)
-            .bind(public)
+            .bind(if body.public { 1 } else { 0 })
             .bind(uuid.to_string())
+            .bind(if body.encrypted { 1 } else { 0 })
             .execute(&mut db)
             .await?;
         res.set_body(json!({ "message": "Ok", "uuid": uuid.to_string() }));

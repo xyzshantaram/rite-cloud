@@ -238,7 +238,7 @@ form {
     margin: 1rem;
 }
 
-form>input {
+form>input, button {
     margin: 0.4rem;
     border-radius: 0.2rem;
     background: inherit;
@@ -249,15 +249,15 @@ form>input {
     outline: none;
 }
 
-form>input:focus:not(:hover) {
+form>input:focus:not(:hover), button:focus:not(:hover) {
     border-color: #555555;
 }
 
-form>input[type=submit] {
+form>input[type=submit], button {
     cursor: pointer;
 }
 
-form>input[type=submit]:active:not(:hover) {
+form>input[type=submit]:active:not(:hover), button:active:not(:hover) {
     border-color: #555555;
 }
 
@@ -314,7 +314,7 @@ thead {
         color: #2049c7;
     }
 
-    input[type='text']:hover, input[type='submit']:hover {
+    input[type='text']:hover, input[type='submit']:hover, button:hover {
         border-color: gray;
     }
 }
@@ -337,19 +337,19 @@ thead {
         background: #404040;
     }
 
-    form>input {
+    form>input, button {
         border-color: gray;
     }
 
-    form>input:focus:not(:hover) {
+    form>input:focus:not(:hover), button:focus:not(:hover) {
         border-color: #f5f4f0;
     }
 
-    form>input[type=submit]:active:not(:hover) {
+    form>input[type=submit]:active:not(:hover), button:active:not(:hover) {
         border-color: #f5f4f0;
     }
 
-    input[type='text']:hover, input[type='submit']:hover {
+    input[type='text']:hover, input[type='submit']:hover, button:hover {
         border-color: #aaaaaa;
     }
 }

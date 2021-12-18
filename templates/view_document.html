@@ -6,9 +6,12 @@
 
 {% block content %}
 
+<script src='/res/alert.js'></script>
+<link rel='stylesheet' href='/res/alert.css'>
+
 <a id='raw-link' href='?raw=true'>View raw</a>
 <a href='javascript:void(0)' id='print'>Print</a>
-<div id='md-raw'>{{ contents | json_encode() }}</div>
+<div id='md-raw' data-encrypted="{{ encrypted }}">{{ contents | json_encode() }}</div>
 <div id='loading'>
     Loading
 </div>
@@ -18,6 +21,7 @@
     import DOMPurify from 'https://esm.sh/dompurify';
     import { highlight, HL_KEYWORDS } from 'https://esm.sh/macrolight';
     import { escape, unescape, mustache } from 'https://esm.sh/campfire.js';
+    import CryptoJS from 'https://esm.sh/crypto-js';
     // {% raw %}
     const TABLE_MARKUP = `\
 <div class='table-wrapper'>
@@ -40,11 +44,32 @@
         return str;
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("DOMContentLoaded", async () => {
+        initialiseAlert();
         const loading = document.querySelector("#loading");
         const raw = document.querySelector("#md-raw");
         const print = document.querySelector('#print');
         const rawLink = document.querySelector('#raw-link');
+
+        const AESDecrypt = (ciphertext, passphrase) => {
+            const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase, {
+                format: CryptoJS.format.OpenSSL
+            });
+            return bytes.toString(CryptoJS.enc.Utf8);
+        };
+
+        let mdContents = unescape(JSON.parse(raw.innerHTML));
+
+        if (raw.getAttribute('data-encrypted') === 'true') {
+            try {
+                let passphrase = await alertjs.promises.prompt('Enter passphrase', 'This document is encrypted. Enter the passphrase to decrypt it.');
+                mdContents = AESDecrypt(mdContents, passphrase);
+            }
+            catch (e) {
+                await alertjs.promises.message('Error decrypting data.', `<details><summary>Error decrypting data - did you enter the right password?</summary>${e}</details>`);
+                hideAlert();
+            }
+        }
 
         print.addEventListener('click', () => {
             window.print();
@@ -116,14 +141,13 @@
         window.onafterprint = () => {
             let next = null;
             while (next = hidden.pop()) {
-                console.log(next)
                 next.e.style.display = next.d;
             }
             result.style.borderTopColor = 'gray';
             document.body.style.marginTop = '5rem';
         }
 
-        let rendered = marked.parse(unescape(JSON.parse(raw.innerHTML)));
+        let rendered = marked.parse(mdContents);
         result.innerHTML = DOMPurify.sanitize(rendered);
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
