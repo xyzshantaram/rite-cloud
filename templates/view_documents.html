@@ -18,7 +18,8 @@
                         href="/docs/delete/{{ name | urlencode_strict }}/{{ revision.revision | urlencode_strict }}">Delete</a>
                 </div>
                 <div>
-                    Visibility: <strong>{% if revision.public %}Public{% else %}Private{% endif %}</strong></a>
+                    Visibility: <strong>{% if revision.public %}Public{% else %}Private{% endif %}</strong>,
+                    {% if revision.encrypted %} encrypted {% else %} not encrypted {% endif %}</a>
                     <a href="/docs/toggle-visibility/{{ revision.uuid | urlencode_strict }}">
                         ({% if revision.public %}Make private{% else %}Make public{% endif %})</a>
                 </div>
