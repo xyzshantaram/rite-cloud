@@ -146,7 +146,7 @@
         }
 
         let rendered = marked.parse(mdContents);
-        result.innerHTML = DOMPurify.sanitize(marked.parse(md), { FORCE_BODY: true, ADD_TAGS: ['style'] });
+        result.innerHTML = DOMPurify.sanitize(marked.parse(rendered), { FORCE_BODY: true, ADD_TAGS: ['style'] });
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
     })
