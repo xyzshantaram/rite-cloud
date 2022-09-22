@@ -191,10 +191,13 @@
         })
 
         let rendered = marked.parse(mdContents);
-        result.innerHTML = DOMPurify.sanitize(marked.parse(rendered), { FORCE_BODY: true, ADD_TAGS: ['style'] });
+        console.log('0');
+        result.innerHTML = DOMPurify.sanitize(rendered, { FORCE_BODY: true, ADD_TAGS: ['style'] });
+        console.log('1');
         raw.insertAdjacentElement("afterend", result);
+        console.log('2');
         loading.style.display = 'none';
-
+        console.log('3');
         if (new URLSearchParams(window.location.search).get('present') === 'true') present();
     })
 </script>
