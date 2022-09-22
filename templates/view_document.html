@@ -147,7 +147,7 @@
             document.body.style.marginTop = '5rem';
         }
 
-        const present = (initialSlide = 0) => {
+        const present = () => {
             const slides = Array.from(document.querySelectorAll('h3')).reduce((l, heading) => {
                 let elt = heading;
                 let children = [];
@@ -185,8 +185,8 @@
         }
 
         presentLink.addEventListener('click', async () => {
-            if (await alerts.confirm('The "Present" feature converts your document to a presentation by turning every h3(###) to a new slide. Continue?')) {
-                present(0);
+            if (await alerts.confirm('The "Present" feature converts your document to a presentation by turning every third-level heading (lines that start with ###) to a new slide. Navigate between slides using your keyboard\'s left/right arrow keys, or by clicking the right half of the screen to go forward, and the left to go backwards. Continue?')) {
+                present();
             }
         })
 
@@ -194,6 +194,8 @@
         result.innerHTML = DOMPurify.sanitize(marked.parse(rendered), { FORCE_BODY: true, ADD_TAGS: ['style'] });
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
+
+        if (new URLSearchParams(window.location.search).get('present') === true) present();
     })
 </script>
 
