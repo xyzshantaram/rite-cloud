@@ -180,7 +180,7 @@
             window.onclick = e =>
                 (e.clientX > window.innerWidth / 2 ? nextSlide() : prevSlide());
             [...Array.from(document.querySelectorAll('#content>:not(#md-rendered)')), ...Array.from(document.querySelectorAll('body>:not(#content)'))].forEach(elt => elt.style.display = 'none');
-            renderSlide(slideIdx);
+            renderSlide(slideIdx = 0);
         }
 
         presentLink.addEventListener('click', async () => {
