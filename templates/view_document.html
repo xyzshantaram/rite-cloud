@@ -7,7 +7,8 @@
 {% block content %}
 
 <a id='raw-link' href='?raw=true'>View raw</a>
-<a href='javascript:void(0)' id='print'>Print</a>
+<a id='print' href="javascript:void(0)">Print</a>
+<a id='present' href="javascript:void(0)">Present</a>
 <div id='md-raw' data-encrypted="{{ encrypted }}">{{ contents | json_encode() }}</div>
 <div id='loading'>
     Loading
@@ -49,6 +50,7 @@
         const raw = document.querySelector("#md-raw");
         const print = document.querySelector('#print');
         const rawLink = document.querySelector('#raw-link');
+        const presentLink = document.querySelector('#present');
 
         const AESDecrypt = (ciphertext, passphrase) => {
             const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase, {
@@ -144,6 +146,46 @@
             result.style.borderTopColor = 'gray';
             document.body.style.marginTop = '5rem';
         }
+        const present = () => {
+            const slides = Array.from(document.querySelectorAll('h3')).reduce((l, heading) => {
+                let elt = heading;
+                let children = [];
+                while (elt && elt.nextSibling && elt.nextSibling.tagName !== "H3") children.push(elt = (elt?.nextSibling || null));
+                l.push([heading, ...children]);
+                return l;
+            }, []);
+            document.body.style.marginTop = '1rem';
+            document.querySelector('#md-rendered').style.borderTop = 'none';
+            const renderSlide = (idx) => {
+                for (let i = 0; i < slides.length; i++) {
+                    if (idx == i) continue;
+                    slides[i].forEach(elt => elt.style && (elt.style.display = 'none'));
+                }
+                slides[idx]?.forEach(elt => {
+                    if (elt.tagName == "H3") {
+                        elt.style.display = "block";
+                        window.location = window.location.origin + window.location.pathname + '#' + elt.id;
+                    }
+                    else if (elt.tagName === "UL" || elt.tagName === "P" || elt.tagName === "DETAILS") elt.style.display = "block";
+                    else if (elt.tagName === "DIV") elt.style.display = "flex";
+                })
+            }
+            let slideIdx = 0;
+            const nextSlide = () => renderSlide((++slideIdx < slides.length) ? slideIdx : slideIdx = slides.length - 1);
+            const prevSlide = () => renderSlide((--slideIdx > 0) ? slideIdx : slideIdx = 0);
+            document.body.onkeyup = e => {
+                if (e.key === "ArrowRight") nextSlide();
+                else if (e.key === "ArrowLeft") prevSlide();
+            };
+            window.onclick = e =>
+                (e.clientX > window.innerWidth / 2 ? nextSlide() : prevSlide());
+            [...Array.from(document.querySelectorAll('#content>:not(#md-rendered)')), ...Array.from(document.querySelectorAll('body>:not(#content)'))].forEach(elt => elt.style.display = 'none');
+            renderSlide(slideIdx);
+        }
+
+        presentLink.addEventListener('click', () => {
+            present();
+        })
 
         let rendered = marked.parse(mdContents);
         result.innerHTML = DOMPurify.sanitize(marked.parse(rendered), { FORCE_BODY: true, ADD_TAGS: ['style'] });
