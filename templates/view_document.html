@@ -45,7 +45,7 @@
         return str;
     }
 
-    window.addEventListener("load", async () => {
+    window.addEventListener("DOMContentLoaded", async () => {
         const loading = document.querySelector("#loading");
         const raw = document.querySelector("#md-raw");
         const print = document.querySelector('#print');
@@ -192,10 +192,8 @@
 
         let rendered = marked.parse(mdContents);
         result.innerHTML = DOMPurify.sanitize(rendered, { FORCE_BODY: true, ADD_TAGS: ['style'] });
-        console.log(DOMPurify.sanitize(rendered, { FORCE_BODY: true, ADD_TAGS: ['style'] }));
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
-        if (new URLSearchParams(window.location.search).get('present') === 'true') present();
     })
 </script>
 
