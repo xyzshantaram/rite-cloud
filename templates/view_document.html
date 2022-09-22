@@ -184,8 +184,9 @@
         }
 
         presentLink.addEventListener('click', async () => {
-            await alerts.message('The "Present" feature converts your document to a presentation by turning every h3(###) to a new slide. Continue?');
-            present();
+            if (await alerts.confirm('The "Present" feature converts your document to a presentation by turning every h3(###) to a new slide. Continue?')) {
+                present();
+            }
         })
 
         let rendered = marked.parse(mdContents);
