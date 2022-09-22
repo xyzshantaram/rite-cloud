@@ -183,7 +183,8 @@
             renderSlide(slideIdx);
         }
 
-        presentLink.addEventListener('click', () => {
+        presentLink.addEventListener('click', async () => {
+            await alerts.message('The "Present" feature converts your document to a presentation by turning every h3(###) to a new slide. Continue?');
             present();
         })
 
