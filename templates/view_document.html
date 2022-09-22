@@ -146,7 +146,8 @@
             result.style.borderTopColor = 'gray';
             document.body.style.marginTop = '5rem';
         }
-        const present = () => {
+
+        const present = (initialSlide = 0) => {
             const slides = Array.from(document.querySelectorAll('h3')).reduce((l, heading) => {
                 let elt = heading;
                 let children = [];
@@ -170,7 +171,7 @@
                     else if (elt.tagName === "DIV") elt.style.display = "flex";
                 })
             }
-            let slideIdx = 0;
+            let slideIdx = -1;
             const nextSlide = () => renderSlide((++slideIdx < slides.length) ? slideIdx : slideIdx = slides.length - 1);
             const prevSlide = () => renderSlide((--slideIdx > 0) ? slideIdx : slideIdx = 0);
             document.body.onkeyup = e => {
@@ -180,12 +181,12 @@
             window.onclick = e =>
                 (e.clientX > window.innerWidth / 2 ? nextSlide() : prevSlide());
             [...Array.from(document.querySelectorAll('#content>:not(#md-rendered)')), ...Array.from(document.querySelectorAll('body>:not(#content)'))].forEach(elt => elt.style.display = 'none');
-            renderSlide(slideIdx = 0);
+            renderSlide(slideIdx);
         }
 
         presentLink.addEventListener('click', async () => {
             if (await alerts.confirm('The "Present" feature converts your document to a presentation by turning every h3(###) to a new slide. Continue?')) {
-                present();
+                present(0);
             }
         })
 
