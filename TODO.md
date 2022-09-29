@@ -2,7 +2,6 @@
 - split up into more modules
 - Handle serde errors gracefully
 - add doc_exists helper
-
 - admin page
 - add a toml config file
 - inbuilt ssl support
@@ -12,3 +11,5 @@
 - send back uuid of newly uploaded doc
 - semver things
 - show version or git commit hash on pages
+- distribute neat zip files instead of naked binaries and figure out how to add
+  version number to exe name
