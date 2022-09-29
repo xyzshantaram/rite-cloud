@@ -20,7 +20,7 @@ jobs:
           override: true
 
       - name: Build
-        run: cargo build --all --release && strip target/release/rite-cloud && mv target/release/rite-cloud target/release/rite-cloud_amd64
+        run: cargo build --all --release && strip target/release/rite-cloud && mv target/release/rite-cloud target/release/rite-cloud_amd64 && chmod +x target/release/rite-cloud_amd64
 
       - name: Release
         uses: softprops/action-gh-release@v1

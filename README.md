@@ -103,8 +103,9 @@ server does.
 
 #### Updating
 
-To update your rite-cloud instance, pull the latest copy of the source, build
-it, and then copy over the files to `/opt/rite-cloud` again.
+To update your rite-cloud instance, pull the latest copy of the source, build it
+(or you can use one of the builds from the releases section), and then copy over
+the files to `/opt/rite-cloud` again.
 
 ```sh
 cd rite-cloud
