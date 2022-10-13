@@ -106,7 +106,7 @@ async fn main() -> tide::Result<()> {
     };
 
     let api = {
-        let mut app = tide::with_state(state);
+        let mut app = tide::with_state(state.clone());
         app.at("/docs/upload")
             .with(GovernorMiddleware::per_minute(2)?)
             .with(DocPrelimChecks::new())
@@ -119,10 +119,17 @@ async fn main() -> tide::Result<()> {
         app
     };
 
+    let blog = {
+        let mut app = tide::with_state(state);
+        app.at("/:username").get(routes::blog::home);
+        app
+    };
+
     app.at("/clients").nest(clients);
     app.at("/docs").nest(docs);
     app.at("/auth").nest(auth);
     app.at("/api").nest(api);
+    app.at("/blog").nest(blog);
 
     app.listen(cfg.app_url).await?;
     Ok(())
