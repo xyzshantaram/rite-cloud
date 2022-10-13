@@ -1,9 +1,12 @@
+use crate::{
+    rite::{render_error, DocumentMetadata},
+    State,
+};
 use http_types::StatusCode;
 use sqlx::Sqlite;
-use tide_tera::{TideTeraExt, context};
+use tide::Request;
+use tide_tera::{context, TideTeraExt};
 use urlencoding::decode;
-use tide::{Request};
-use crate::{State, rite::{render_error, DocumentMetadata}};
 
 pub async fn home(req: Request<State>) -> tide::Result {
     let state = req.state();
@@ -15,22 +18,27 @@ pub async fn home(req: Request<State>) -> tide::Result {
     } else {
         return render_error(tera, "Bad request.", "", StatusCode::BadRequest);
     }
+
+    let docs: Vec<DocumentMetadata> = sqlx::query_as::<Sqlite, DocumentMetadata>(
+        "select * from documents where user = ? and public = 1;",
+    )
+    .bind(&username)
+    .fetch_all(&mut db)
+    .await?;
+
     let ctx = context! {
         "section" => "blog",
         "content" => "blog for ".to_owned() + &username
     };
 
-    let docs: Vec<DocumentMetadata> = 
-        sqlx::query_as::<Sqlite, DocumentMetadata>("select * from documents where user = ? and public = 1;")
-            .bind(&username)
-            .fetch_all(&mut db)
-            .await?;
-
     if docs.is_empty() {
-        render_error(tera, "Blog not found", "The user whose blog you tried to view either does not exist or has no content.", StatusCode::NotFound)
-    }
-    else {
+        render_error(
+            tera,
+            "Blog not found",
+            "The user whose blog you tried to view either does not exist or has no content.",
+            StatusCode::NotFound,
+        )
+    } else {
         tera.render_response("blog.html", &ctx)
     }
-    
 }
