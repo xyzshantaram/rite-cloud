@@ -28,14 +28,15 @@ pub async fn home(req: Request<State>) -> tide::Result {
 
     let ctx = context! {
         "section" => "blog",
-        "content" => "blog for ".to_owned() + &username
+        "content" => "blog for ".to_owned() + &username,
+        "docs" => docs
     };
 
     if docs.is_empty() {
         render_error(
             tera,
             "Blog not found",
-            "The user whose blog you tried to view either does not exist or has no content.",
+            "The user whose blog you tried to view either does not exist or has no published content.",
             StatusCode::NotFound,
         )
     } else {
