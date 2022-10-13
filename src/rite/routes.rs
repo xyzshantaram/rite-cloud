@@ -1,4 +1,3 @@
-use http_types::{StatusCode};
 use tide_tera::{context, TideTeraExt};
 
 use crate::TERA;
@@ -26,19 +25,14 @@ pub async fn homepage(req: Request<State>) -> tide::Result {
 
 pub async fn error_handler(res: tide::Response) -> tide::Result {
     let tera = TERA.clone();
-    if let Some(err) = res.error() {
-        render_error(
+    if !res.status().is_success() {
+        return render_error(
             tera,
-            "Error",
-            err.type_name().get_or_insert("An error occurred."),
+            res.status().canonical_reason(),
+            "An error occurred while trying to fetch the resource you requested.",
             res.status(),
-        )
-    } else {
-        render_error(
-            tera,
-            "Error",
-            "An error occurred.",
-            StatusCode::InternalServerError,
-        )
+        );
     }
+
+    Ok(res)
 }
