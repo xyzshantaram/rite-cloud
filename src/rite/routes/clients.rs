@@ -32,12 +32,12 @@ pub async fn link_get(req: Request<State>) -> tide::Result {
     match tera.render_response("link_client.html", &context) {
         Ok(val) => Ok(val),
         Err(err) => {
-            return render_error(
+            render_error(
                 tera,
                 "Error while getting access token",
                 &format!("{:?}", err),
                 StatusCode::InternalServerError,
-            );
+            )
         }
     }
 }

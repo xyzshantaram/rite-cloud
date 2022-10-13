@@ -69,16 +69,10 @@ pub async fn delete(req: Request<State>) -> tide::Result {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 #[serde(default)]
 pub struct ViewQueryParams {
     raw: bool,
-}
-
-impl Default for ViewQueryParams {
-    fn default() -> Self {
-        Self { raw: false }
-    }
 }
 
 pub async fn view(req: Request<State>) -> tide::Result {

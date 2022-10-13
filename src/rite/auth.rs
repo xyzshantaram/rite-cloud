@@ -9,17 +9,16 @@ use oauth2::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+/* #[derive(Debug, Deserialize)]
 struct UserInfoResponse {
     // email: String,
     id: String,
     given_name: String,
-}
+} */
 
 #[derive(Debug, Deserialize)]
 struct AuthRequestQuery {
     code: String,
-    state: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -72,7 +71,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             }
         }
         Err(RequestTokenError::Parse(_, bytes)) => {
-            return render_error(
+            render_error(
                 tera,
                 "Expired or invalid code while trying to log in",
                 &format!(
@@ -80,15 +79,15 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                     string::String::from_utf8(bytes).unwrap_or_default()
                 ),
                 StatusCode::Conflict,
-            );
+            )
         }
         Err(otherwise) => {
-            return render_error(
+            render_error(
                 tera,
                 "Error while getting access token",
                 &format!("{:?}", otherwise),
                 StatusCode::InternalServerError,
-            );
+            )
         }
     }
 }
