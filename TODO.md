@@ -4,8 +4,6 @@
 - add doc_exists helper
 - admin page
 - add a toml config file
-- inbuilt ssl support
-- github actions build
 - add a "newer version of this doc exists" message
 - store place user was on before login
 - send back uuid of newly uploaded doc
@@ -13,3 +11,5 @@
 - show version or git commit hash on pages
 - distribute neat zip files instead of naked binaries and figure out how to add
   version number to exe name
+- add delete confirmation screen
+- add "convert to blog"
