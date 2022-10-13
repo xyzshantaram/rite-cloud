@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use async_sqlx_session::SqliteSessionStore;
 use http_types::cookies::SameSite;
+use lazy_static::lazy_static;
 use rite::{
     auth::{self, logout},
     config::RiteConfig,
@@ -12,8 +13,17 @@ use rite::{
 };
 use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
 use tera::Tera;
-use tide::sessions::SessionMiddleware;
+use tide::{sessions::SessionMiddleware, utils::After};
 use tide_governor::GovernorMiddleware;
+
+lazy_static! {
+    pub static ref TERA: Tera = {
+        let mut tera =
+            Tera::new("templates/**/*").expect("Error parsing templates while initialising Tera.");
+        tera.autoescape_on(vec!["html", "sql"]);
+        tera
+    };
+}
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
@@ -22,13 +32,6 @@ async fn main() -> tide::Result<()> {
         panic!("Error getting environment variable {}: {}", e.0, e.1);
     }
 
-    let tera: Tera = {
-        let mut tera =
-            Tera::new("templates/**/*").expect("Error parsing templates while initialising Tera.");
-        tera.autoescape_on(vec!["html"]);
-        tera
-    };
-
     let session_db = db_connection(cfg.session_db_url.clone()).await?;
     let mut rite_db = db_connection(cfg.rite_db_url.clone()).await?;
     initialise_db(&mut rite_db).await?;
@@ -36,7 +39,6 @@ async fn main() -> tide::Result<()> {
     let state = State {
         gh_client: auth::gh_oauth_client(&cfg).unwrap(),
         cfg: cfg.clone(),
-        tera,
         session_db: session_db.clone(),
         rite_db,
     };
@@ -131,6 +133,7 @@ async fn main() -> tide::Result<()> {
     app.at("/api").nest(api);
     app.at("/blog").nest(blog);
 
+    app.with(After(routes::error_handler));
     app.listen(cfg.app_url).await?;
     Ok(())
 }

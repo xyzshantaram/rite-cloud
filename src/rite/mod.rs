@@ -17,7 +17,6 @@ use tide_tera::{context, TideTeraExt};
 pub struct State {
     pub gh_client: BasicClient,
     pub cfg: RiteConfig,
-    pub tera: tera::Tera,
     pub session_db: SqlitePool,
     pub rite_db: SqlitePool,
 }

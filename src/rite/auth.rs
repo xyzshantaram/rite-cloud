@@ -28,7 +28,7 @@ struct GhResponse {
 
 use super::RiteConfig;
 use crate::rite::render_error;
-use crate::State;
+use crate::{State, TERA};
 use tide::{Redirect, Request};
 
 pub async fn gh(req: Request<State>) -> tide::Result {
@@ -45,7 +45,7 @@ pub async fn gh(req: Request<State>) -> tide::Result {
 pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
     let state = &req.state();
     let client = &state.gh_client;
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
     let query: AuthRequestQuery = req.query()?;
     let code = AuthorizationCode::new(query.code);
     let token_res = client.exchange_code(code).request(http_client);
@@ -70,25 +70,21 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                 ),
             }
         }
-        Err(RequestTokenError::Parse(_, bytes)) => {
-            render_error(
-                tera,
-                "Expired or invalid code while trying to log in",
-                &format!(
-                    "error text: {}",
-                    string::String::from_utf8(bytes).unwrap_or_default()
-                ),
-                StatusCode::Conflict,
-            )
-        }
-        Err(otherwise) => {
-            render_error(
-                tera,
-                "Error while getting access token",
-                &format!("{:?}", otherwise),
-                StatusCode::InternalServerError,
-            )
-        }
+        Err(RequestTokenError::Parse(_, bytes)) => render_error(
+            tera,
+            "Expired or invalid code while trying to log in",
+            &format!(
+                "error text: {}",
+                string::String::from_utf8(bytes).unwrap_or_default()
+            ),
+            StatusCode::Conflict,
+        ),
+        Err(otherwise) => render_error(
+            tera,
+            "Error while getting access token",
+            &format!("{:?}", otherwise),
+            StatusCode::InternalServerError,
+        ),
     }
 }
 

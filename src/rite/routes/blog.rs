@@ -1,6 +1,6 @@
 use crate::{
     rite::{render_error, DocumentMetadata},
-    State,
+    State, TERA,
 };
 use http_types::StatusCode;
 use sqlx::Sqlite;
@@ -10,7 +10,7 @@ use urlencoding::decode;
 
 pub async fn home(req: Request<State>) -> tide::Result {
     let state = req.state();
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
     let mut db = state.rite_db.acquire().await?;
     let username;
     if let Ok(val) = req.param("username") {

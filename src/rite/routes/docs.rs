@@ -1,6 +1,6 @@
 use crate::{
     rite::{contents, render_error, ContentGetError, Document},
-    State,
+    State, TERA,
 };
 use http_types::{mime, StatusCode};
 use indexmap::IndexMap;
@@ -12,7 +12,7 @@ use urlencoding::decode;
 
 pub async fn delete(req: Request<State>) -> tide::Result {
     let state = req.state();
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
     let mut db = state.rite_db.acquire().await?;
 
     let username: String = req.session().get("username").unwrap();
@@ -84,7 +84,7 @@ pub async fn view(req: Request<State>) -> tide::Result {
     let params: ViewQueryParams = req.query()?;
     let state = req.state().clone();
     let mut db = state.rite_db.acquire().await?;
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
 
     match contents(&uuid, &mut db, username.clone()).await {
         Ok(doc) => {
@@ -132,7 +132,7 @@ pub async fn view(req: Request<State>) -> tide::Result {
 
 pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
     let state = req.state();
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
     let mut db = state.rite_db.acquire().await?;
 
     let uuid;
@@ -182,7 +182,7 @@ pub async fn list(req: Request<State>) -> tide::Result {
     let state = req.state();
     let session = req.session();
     let mut db = state.rite_db.acquire().await?;
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
 
     if let Some(val) = session.get::<String>("username") {
         let username = val;

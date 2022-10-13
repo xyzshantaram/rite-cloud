@@ -2652,6 +2652,7 @@ dependencies = [
  "http-types",
  "hyper-native-tls",
  "indexmap",
+ "lazy_static",
  "oauth2",
  "serde",
  "serde_json",

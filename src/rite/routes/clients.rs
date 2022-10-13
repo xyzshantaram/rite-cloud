@@ -5,7 +5,10 @@ use tide::{Redirect, Request};
 use tide_tera::{context, TideTeraExt};
 use uuid::Uuid;
 
-use crate::rite::{render_error, Client, LinkRequest, State};
+use crate::{
+    rite::{render_error, Client, LinkRequest, State},
+    TERA,
+};
 
 pub async fn link_get(req: Request<State>) -> tide::Result {
     let session = req.session();
@@ -18,7 +21,7 @@ pub async fn link_get(req: Request<State>) -> tide::Result {
     let token = Uuid::new_v4();
     context.try_insert("section", "link a client")?;
     context.try_insert("token", &token.to_string())?;
-    let tera = req.state().tera.clone();
+    let tera = TERA.clone();
     let mut db = req.state().rite_db.clone().acquire().await?;
 
     sqlx::query(
@@ -31,20 +34,18 @@ pub async fn link_get(req: Request<State>) -> tide::Result {
 
     match tera.render_response("link_client.html", &context) {
         Ok(val) => Ok(val),
-        Err(err) => {
-            render_error(
-                tera,
-                "Error while getting access token",
-                &format!("{:?}", err),
-                StatusCode::InternalServerError,
-            )
-        }
+        Err(err) => render_error(
+            tera,
+            "Error while getting access token",
+            &format!("{:?}", err),
+            StatusCode::InternalServerError,
+        ),
     }
 }
 
 pub async fn delete(req: Request<State>) -> tide::Result {
     let state = req.state();
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
     let mut db = state.rite_db.acquire().await?;
     let username: String;
     if let Some(val) = req.session().get("username") {
@@ -71,7 +72,7 @@ pub async fn create(mut req: Request<State>) -> tide::Result {
     let session = req.session();
     let state = req.state();
     let db = state.rite_db.clone();
-    let tera = state.tera.clone();
+    let tera = TERA.clone();
     let mut context = Context::new();
     let mut username = String::new();
     const EXPIRE_TIMEOUT: i32 = 300; // in seconds
@@ -130,7 +131,7 @@ pub async fn create(mut req: Request<State>) -> tide::Result {
 
 pub async fn view(req: Request<State>) -> tide::Result {
     let session = req.session();
-    let tera = req.state().tera.clone();
+    let tera = TERA.clone();
     let mut context = context! {
         "section" => "view clients"
     };
