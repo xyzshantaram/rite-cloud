@@ -129,7 +129,9 @@ pre {
     word-break: break-all;
 }
 
-a, a:link, a:visited {
+a,
+a:link,
+a:visited {
     transition-duration: 0.2s;
     color: #4a8bf3;
 }
@@ -226,7 +228,9 @@ form {
     margin: 1rem;
 }
 
-form>input, button {
+form>input,
+button,
+.button {
     margin: 0.4rem;
     border-radius: 0.2rem;
     background: inherit;
@@ -235,17 +239,30 @@ form>input, button {
     padding: 0.4rem;
     font-family: inherit;
     outline: none;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-align: center;
 }
 
-form>input:focus:not(:hover), button:focus:not(:hover) {
+.button a,
+.button a:link,
+.button a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+form>input:focus:not(:hover),
+button:focus:not(:hover) {
     border-color: #555555;
 }
 
-form>input[type=submit], button {
+form>input[type=submit],
+button {
     cursor: pointer;
 }
 
-form>input[type=submit]:active:not(:hover), button:active:not(:hover) {
+form>input[type=submit]:active:not(:hover),
+button:active:not(:hover) {
     border-color: #555555;
 }
 
@@ -265,7 +282,8 @@ table {
     border-radius: 0.2rem;
 }
 
-td, th {
+td,
+th {
     padding: 0.4rem;
     border-right: 1px solid #bbbbbb;
     border-bottom: 1px solid #bbbbbb;
@@ -276,7 +294,8 @@ th {
     border-color: #999999;
 }
 
-td:last-child, th:last-child {
+td:last-child,
+th:last-child {
     border-right: none;
 }
 
@@ -302,7 +321,16 @@ thead {
         color: #2049c7;
     }
 
-    input[type='text']:hover, input[type='submit']:hover, button:hover {
+
+    .button a:hover,
+    .button a:visited:hover {
+        color: inherit;
+    }
+
+    input[type='text']:hover,
+    input[type='submit']:hover,
+    button:hover,
+    button:hover {
         border-color: gray;
     }
 }
@@ -317,7 +345,8 @@ thead {
         background: #505050;
     }
 
-    a, a:visited {
+    a,
+    a:visited {
         color: #4a8bf3;
     }
 
@@ -325,19 +354,28 @@ thead {
         background: #404040;
     }
 
-    form>input, button {
+    form>input,
+    button,
+    .button {
         border-color: gray;
     }
 
-    form>input:focus:not(:hover), button:focus:not(:hover) {
+    form>input:focus:not(:hover),
+    button:focus:not(:hover),
+    .button:focus:not(:hover) {
         border-color: #f5f4f0;
     }
 
-    form>input[type=submit]:active:not(:hover), button:active:not(:hover) {
+    form>input[type=submit]:active:not(:hover),
+    button:active:not(:hover),
+    .button:active:not(:hover) {
         border-color: #f5f4f0;
     }
 
-    input[type='text']:hover, input[type='submit']:hover, button:hover {
+    input[type='text']:hover,
+    input[type='submit']:hover,
+    button:hover,
+    .button:hover {
         border-color: #aaaaaa;
     }
 }

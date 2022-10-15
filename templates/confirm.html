@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .large {
+        font-size: 1.6rem;
+    }
+
+    input[type=submit],
+    .button {
+        min-width: 20ch;
+        margin: 0.4rem;
+        margin-left: 0;
+    }
+
+    form {
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+        margin-left: 0;
+        margin-right: 0;
+    }
+</style>
+{% if action == "delete" %}
+<p><strong class='large'>THIS CANNOT BE UNDONE:</strong></p>
+<p>
+    Are you sure you want to delete the revision <strong>{{ doc.revision }}</strong> of the document <strong>{{ doc.name
+        }}</strong>?
+</p>
+{% elif action == "delete-all" %}
+<p><strong class='large'>THIS CANNOT BE UNDONE:</strong></p>
+<p>
+    Are you sure you want to delete all revisions of the document <strong>{{ doc.name }}</strong>?
+</p>
+{% elif action == "toggle-vis" %}
+<p>
+    Are you sure you want to make the document <strong>{{ doc.name }}</strong> {% if doc.public %}private{% else
+    %}public{% endif %}?
+</p>
+{% else %}
+<p>
+    Error: Unknown action!
+</p>
+{% endif %}
+<form method="post" action='{% 
+        if action=="delete" 
+            %}/docs/delete{%
+        elif action == "delete-all" 
+            %}/docs/delete-all{%
+        elif action == "toggle-vis"
+            %}/docs/toggle-visibility{%
+        else 
+            %}.{%
+        endif
+    %}'>
+    <input type="submit" value="Yes">
+    <span class="button"><a href="/docs/list">No, take me back!</a></span>
+    <input type="text" hidden readonly value="{{ doc.uuid }}" name="uuid">
+</form>
+{% endblock content %}

@@ -15,12 +15,12 @@
                 <div>
                     <a href="/docs/view/{{ revision.uuid | urlencode_strict }}">View online</a>
                     <a class='delete'
-                        href="/docs/delete/{{ name | urlencode_strict }}/{{ revision.revision | urlencode_strict }}">Delete</a>
+                        href="/confirm?action=delete&uuid={{revision.uuid | urlencode_strict }}">Delete</a>
                 </div>
                 <div>
                     Visibility: <strong>{% if revision.public %}Public{% else %}Private{% endif %}</strong>,
                     {% if revision.encrypted %} encrypted {% else %} not encrypted {% endif %}</a>
-                    <a href="/docs/toggle-visibility/{{ revision.uuid | urlencode_strict }}">
+                    <a href="/confirm?action=toggle-vis&uuid={{revision.uuid | urlencode_strict }}">
                         ({% if revision.public %}Make private{% else %}Make public{% endif %})</a>
                 </div>
             </li>
@@ -28,10 +28,7 @@
         {% endfor %}
         <div>
             {% if revisions | length > 1 %}
-            <div>
-                <strong>THIS CANNOT BE UNDONE:</strong>
-            </div>
-            <a class='delete' href="/docs/delete/{{ name | urlencode_strict }}">
+            <a class='delete' href="/confirm?action=delete-all&uuid={{revisions[0].uuid}}">
                 Delete all revisions of document "{{ name }}"</a>
             {% endif %}
         </div>

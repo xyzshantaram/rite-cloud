@@ -91,15 +91,15 @@ async fn main() -> tide::Result<()> {
         app.at("/list")
             .with(WebAuthCheck::new())
             .get(routes::docs::list);
-        app.at("/delete/:name/:revision")
+        app.at("/delete")
             .with(WebAuthCheck::new())
-            .get(routes::docs::delete);
-        app.at("/delete/:name")
+            .post(routes::docs::delete);
+        app.at("/delete-all")
             .with(WebAuthCheck::new())
-            .get(routes::docs::delete);
-        app.at("/toggle-visibility/:uuid")
+            .post(routes::docs::delete_all);
+        app.at("/toggle-visibility")
             .with(WebAuthCheck::new())
-            .get(routes::docs::toggle_visibility);
+            .post(routes::docs::toggle_visibility);
         app.at("/delete")
             .with(WebAuthCheck::new())
             .get(routes::docs::delete);
@@ -123,7 +123,10 @@ async fn main() -> tide::Result<()> {
 
     let blog = {
         let mut app = tide::with_state(state);
-        app.at("/:username").get(routes::blog::home);
+        app.at("/:author").get(routes::blog::home);
+        app.at("/manage")
+            .with(WebAuthCheck::new())
+            .get(routes::blog::manage);
         app
     };
 
@@ -132,6 +135,7 @@ async fn main() -> tide::Result<()> {
     app.at("/auth").nest(auth);
     app.at("/api").nest(api);
     app.at("/blog").nest(blog);
+    app.at("/confirm").get(routes::confirmation_page);
 
     app.with(After(routes::error_handler));
     app.listen(cfg.app_url).await?;
@@ -188,7 +192,8 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         public BOOLEAN,
         added_on DATETIME,
         uuid TEXT UNIQUE,
-        encrypted INT default 0
+        encrypted INT default 0,
+        published_title TEXT
     )",
     )
     .execute(&mut db.acquire().await?)

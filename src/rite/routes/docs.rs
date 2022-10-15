@@ -1,72 +1,67 @@
 use crate::{
-    rite::{contents, render_error, ContentGetError, Document},
+    rite::{contents, render_error, ContentGetError, Document, DocumentMetadata},
     State, TERA,
 };
 use http_types::{mime, StatusCode};
 use indexmap::IndexMap;
 use serde::Deserialize;
-use sqlx::{query::QueryAs, sqlite::SqliteArguments, Sqlite};
+use sqlx::Sqlite;
 use tide::{Redirect, Request, Response};
 use tide_tera::{context, TideTeraExt};
 use urlencoding::decode;
 
-pub async fn delete(req: Request<State>) -> tide::Result {
+#[derive(Deserialize)]
+pub struct MutateRequestBody {
+    uuid: String,
+}
+
+pub async fn delete(mut req: Request<State>) -> tide::Result {
     let state = req.state();
-    let tera = TERA.clone();
     let mut db = state.rite_db.acquire().await?;
 
     let username: String = req.session().get("username").unwrap();
     // unwrapping this is ok because we have the login middleware
+    let body: MutateRequestBody = req.body_form().await?;
 
-    let doc;
-    if let Ok(val) = req.param("name") {
-        doc = decode(val)?.into_owned()
-    } else {
-        return render_error(tera, "Bad request.", "", StatusCode::BadRequest);
-    }
+    sqlx::query("delete from documents where user = ? and uuid = ?")
+        .bind(username)
+        .bind(body.uuid)
+        .execute(&mut db)
+        .await?;
+    Ok(Redirect::new("/docs/list").into())
+}
 
-    let revision = if let Ok(rev) = req.param("revision") {
-        Some(decode(rev)?.into_owned())
+pub async fn delete_all(mut req: Request<State>) -> tide::Result {
+    let state = req.state();
+    let mut db = state.rite_db.acquire().await?;
+
+    let username: String = req.session().get("username").unwrap();
+    // unwrapping this is ok because we have the login middleware
+    let body: MutateRequestBody = req.body_form().await?;
+
+    if let Some(val) = sqlx::query_as::<Sqlite, DocumentMetadata>(
+        "select * from documents where user = ? and uuid = ?",
+    )
+    .bind(&username)
+    .bind(body.uuid)
+    .fetch_optional(&mut db)
+    .await?
+    {
+        sqlx::query("delete from documents where user = ? and name = ?")
+            .bind(&username)
+            .bind(val.name)
+            .execute(&mut db)
+            .await?;
     } else {
-        None
+        return render_error(
+            &TERA.clone(),
+            "Bad request.",
+            "Invalid uuid supplied.",
+            StatusCode::BadRequest,
+        );
     };
 
-    let mut doc_query: QueryAs<Sqlite, Document, SqliteArguments> =
-        sqlx::query_as::<Sqlite, Document>(if revision.is_some() {
-            "select * from documents where user = ? and name = ? and revision = ?;"
-        } else {
-            "select * from documents where user = ? and name = ?;"
-        })
-        .bind(&username)
-        .bind(&doc);
-
-    if let Some(val) = revision.clone() {
-        doc_query = doc_query.bind(val);
-    }
-
-    let doc_exists: Option<Document> = doc_query.fetch_optional(&mut db).await?;
-
-    if doc_exists.is_some() {
-        let mut query = sqlx::query(if revision.is_some() {
-            "delete from documents where user = ? and name = ? and revision = ?;"
-        } else {
-            "delete from documents where user = ? and name = ?;"
-        })
-        .bind(username)
-        .bind(doc);
-        if revision.is_some() {
-            query = query.bind(revision.unwrap());
-        }
-        query.execute(&mut db).await?;
-        Ok(Redirect::new("/docs/list").into())
-    } else {
-        render_error(
-            tera,
-            "Not found.",
-            "The document specified for deletion was not found.",
-            StatusCode::NotFound,
-        )
-    }
+    Ok(Redirect::new("/docs/list").into())
 }
 
 #[derive(Deserialize, Default)]
@@ -109,19 +104,19 @@ pub async fn view(req: Request<State>) -> tide::Result {
         }
         Err(kind) => match kind {
             ContentGetError::NotFound => render_error(
-                tera,
+                &tera,
                 "Not Found",
                 "The document you requested was not found.",
                 StatusCode::NotFound,
             ),
             ContentGetError::Forbidden => render_error(
-                tera,
+                &tera,
                 "Forbidden",
                 "You are not authorized to view the requested document. Ask the owner to make it public. If you are the owner, log in to view this document.",
                 StatusCode::Forbidden,
             ),
             ContentGetError::Unknown => render_error(
-                tera,
+                &tera,
                 "Error",
                 "An unknown error occurred.",
                 StatusCode::InternalServerError,
@@ -130,42 +125,41 @@ pub async fn view(req: Request<State>) -> tide::Result {
     }
 }
 
-pub async fn toggle_visibility(req: Request<State>) -> tide::Result {
+pub async fn toggle_visibility(mut req: Request<State>) -> tide::Result {
     let state = req.state();
     let tera = TERA.clone();
     let mut db = state.rite_db.acquire().await?;
-
-    let uuid;
-    if let Ok(val) = req.param("uuid") {
-        uuid = decode(val)?.into_owned()
-    } else {
-        return render_error(tera, "Bad request.", "", StatusCode::BadRequest);
-    }
+    let username: String = req.session().get("username").unwrap();
+    let body: MutateRequestBody = req.body_form().await?;
 
     let doc_exists: Option<Document> =
-        sqlx::query_as::<Sqlite, Document>("select * from documents where uuid = ?;")
-            .bind(&uuid)
+        sqlx::query_as::<Sqlite, Document>("select * from documents where user = ? and uuid = ?;")
+            .bind(&username)
+            .bind(&body.uuid)
             .fetch_optional(&mut db)
             .await?;
 
     if doc_exists.is_some() {
-        sqlx::query("update documents set public = ((public | 1) - (public & 1)) where uuid = ?;")
-            .bind(uuid)
+        sqlx::query("update documents set public = ((public | 1) - (public & 1)) where user = ? and uuid = ?;")
+        .bind(&username)    
+        .bind(&body.uuid)
             .execute(&mut db)
             .await?;
         Ok(Redirect::new("/docs/list").into())
     } else {
         render_error(
-            tera,
+            &tera,
             "Not found.",
-            "The document specified for deletion was not found.",
+            "The specified document was not found.",
             StatusCode::NotFound,
         )
     }
 }
 
-pub fn group_revisions_by_doc(revisions: &[Document]) -> IndexMap<String, Vec<Document>> {
-    let mut map: IndexMap<String, Vec<Document>> = IndexMap::new();
+pub fn group_revisions_by_doc(
+    revisions: &[DocumentMetadata],
+) -> IndexMap<String, Vec<DocumentMetadata>> {
+    let mut map: IndexMap<String, Vec<DocumentMetadata>> = IndexMap::new();
     revisions.iter().for_each(|elem| {
         let clone = elem.clone();
         if map.contains_key(&elem.name) {
@@ -186,8 +180,8 @@ pub async fn list(req: Request<State>) -> tide::Result {
 
     if let Some(val) = session.get::<String>("username") {
         let username = val;
-        let mut rows: Vec<Document> =
-            sqlx::query_as::<Sqlite, Document>("SELECT * from documents where user = ?;")
+        let mut rows: Vec<DocumentMetadata> =
+            sqlx::query_as::<Sqlite, DocumentMetadata>("SELECT * from documents where user = ?;")
                 .bind(&username)
                 .fetch_all(&mut db)
                 .await?;
@@ -204,6 +198,6 @@ pub async fn list(req: Request<State>) -> tide::Result {
 
         tera.render_response("view_documents.html", &context)
     } else {
-        render_error(tera, "Unknown error.", "", StatusCode::InternalServerError)
+        render_error(&tera, "Unknown error.", "", StatusCode::InternalServerError)
     }
 }
