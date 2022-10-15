@@ -25,7 +25,7 @@ pub async fn homepage(req: Request<State>) -> tide::Result {
 
 pub async fn error_handler(res: tide::Response) -> tide::Result {
     let tera = TERA.clone();
-    if !res.status().is_success() {
+    if res.status().is_server_error() || res.status().is_client_error() {
         return render_error(
             tera,
             res.status().canonical_reason(),
