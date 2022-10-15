@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+{% if docs and docs | length > 0 %}
+<h2>Your documents</h2>
+<p><strong><em>Note: </em></strong> Previewing documents online requires JavaScript.</p>
+<ul>
+    {% for name, revisions in docs %}
+    <li class='rite-document'>
+        <strong>{{ name }}</strong>
+        {% for revision in revisions %}
+        {% if revision.encrypted %} {% continue %} {% endif %}
+        <ul>
+            <li>
+                Revision <strong>{{ revision.revision }}</strong>
+                <div>
+                    <a href="/docs/view/{{ revision.uuid | urlencode_strict }}">View</a>
+                    {% if not revision.published_title %}
+                    <a href="/confirm?action=publish&uuid={{ revision.uuid | urlencode_strict }}">Publish</a>
+                    {% else %}
+                    Published as <strong>{{ revision.published_title }}</strong>.
+                    <a href="/confirm?action=unpublish&uuid={{ revision.uuid | urlencode_strict }}">Unpublish</a>
+                    {% endif %}
+                </div>
+            </li>
+        </ul>
+        {% endfor %}
+    </li>
+    {% endfor %}
+</ul>
+
+<div>Missing a doc? You can only publish unencrypted documents to your blog.</div>
+{% else %}
+<p>You haven't uploaded any documents yet.
+<p>
+<p>Use the "Upload to Rite Cloud" menu option in your Rite client to upload a document.</p>
+{% endif %}
+{% endblock content %}

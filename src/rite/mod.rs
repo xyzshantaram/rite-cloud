@@ -44,6 +44,7 @@ pub struct Document {
     pub public: bool,
     pub uuid: String,
     pub encrypted: Option<bool>,
+    pub published_title: String,
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
@@ -54,6 +55,7 @@ pub struct DocumentMetadata {
     pub public: bool,
     pub uuid: String,
     pub encrypted: Option<bool>,
+    pub published_title: String,
 }
 
 pub enum ContentGetError {
@@ -83,6 +85,9 @@ impl FromRow<'_, SqliteRow> for Document {
             public: row.try_get("public")?,
             uuid: row.try_get("uuid")?,
             encrypted: row.try_get("encrypted")?,
+            published_title: row
+                .try_get("published_title")
+                .unwrap_or_else(|_| "".to_owned()),
         })
     }
 }
@@ -96,11 +101,14 @@ impl FromRow<'_, SqliteRow> for DocumentMetadata {
             public: row.try_get("public")?,
             uuid: row.try_get("uuid")?,
             encrypted: row.try_get("encrypted")?,
+            published_title: row
+                .try_get("published_title")
+                .unwrap_or_else(|_| "".to_owned()),
         })
     }
 }
 
-pub fn render_error(tera: tera::Tera, title: &str, msg: &str, status: StatusCode) -> tide::Result {
+pub fn render_error(tera: &tera::Tera, title: &str, msg: &str, status: StatusCode) -> tide::Result {
     let mut res = tera.render_response(
         "500.html",
         &context! {
