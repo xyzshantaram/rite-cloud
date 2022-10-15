@@ -63,7 +63,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                     Ok(Redirect::new("/home").into())
                 }
                 Err(e) => render_error(
-                    tera,
+                    &tera,
                     "Could not log in",
                     &format!("error saving session: {:?}", e),
                     StatusCode::InternalServerError,
@@ -71,7 +71,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             }
         }
         Err(RequestTokenError::Parse(_, bytes)) => render_error(
-            tera,
+            &tera,
             "Expired or invalid code while trying to log in",
             &format!(
                 "error text: {}",
@@ -80,7 +80,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             StatusCode::Conflict,
         ),
         Err(otherwise) => render_error(
-            tera,
+            &tera,
             "Error while getting access token",
             &format!("{:?}", otherwise),
             StatusCode::InternalServerError,

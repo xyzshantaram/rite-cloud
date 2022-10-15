@@ -35,7 +35,7 @@ pub async fn link_get(req: Request<State>) -> tide::Result {
     match tera.render_response("link_client.html", &context) {
         Ok(val) => Ok(val),
         Err(err) => render_error(
-            tera,
+            &tera,
             "Error while getting access token",
             &format!("{:?}", err),
             StatusCode::InternalServerError,
@@ -52,7 +52,7 @@ pub async fn delete(req: Request<State>) -> tide::Result {
         username = val;
     } else {
         return render_error(
-            tera,
+            &tera,
             "Unknown error",
             "Username was None trying to read session",
             StatusCode::InternalServerError,
@@ -102,7 +102,7 @@ pub async fn create(mut req: Request<State>) -> tide::Result {
         user = val.try_get("user")?;
     } else {
         return render_error(
-            tera,
+            &tera,
             "Invalid or expired token",
             "The token you used was either not found or expired.",
             StatusCode::Conflict,
@@ -150,6 +150,6 @@ pub async fn view(req: Request<State>) -> tide::Result {
         context.try_insert("rows", &rows)?;
         tera.render_response("view_clients.html", &context)
     } else {
-        render_error(tera, "Unknown error.", "", StatusCode::InternalServerError)
+        render_error(&tera, "Unknown error.", "", StatusCode::InternalServerError)
     }
 }
