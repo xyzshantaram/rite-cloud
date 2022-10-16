@@ -1,6 +1,4 @@
-- Request struct with a meta field that's a JsonValue for client requests
 - split up into more modules
-- Handle serde errors gracefully
 - add doc_exists helper
 - admin page
 - add a toml config file
@@ -11,5 +9,4 @@
 - show version or git commit hash on pages
 - distribute neat zip files instead of naked binaries and figure out how to add
   version number to exe name
-- add blog features page at /blog
 - combine / otherwise simplify unpublish and publish
