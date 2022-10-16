@@ -193,7 +193,8 @@ async fn initialise_db(db: &mut SqlitePool) -> Result<(), sqlx::Error> {
         added_on DATETIME,
         uuid TEXT UNIQUE,
         encrypted INT default 0,
-        published_title TEXT
+        published_title TEXT,
+        publish_date DATETIME
     )",
     )
     .execute(&mut db.acquire().await?)

@@ -45,6 +45,7 @@ pub struct Document {
     pub uuid: String,
     pub encrypted: Option<bool>,
     pub published_title: String,
+    pub publish_date: String,
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
@@ -56,6 +57,7 @@ pub struct DocumentMetadata {
     pub uuid: String,
     pub encrypted: Option<bool>,
     pub published_title: String,
+    pub publish_date: String,
 }
 
 pub enum ContentGetError {
@@ -88,6 +90,11 @@ impl FromRow<'_, SqliteRow> for Document {
             published_title: row
                 .try_get("published_title")
                 .unwrap_or_else(|_| "".to_owned()),
+            publish_date: if let Ok(val) = row.try_get::<NaiveDateTime, &str>("publish_date") {
+                val.to_string()
+            } else {
+                "".to_owned()
+            },
         })
     }
 }
@@ -104,6 +111,11 @@ impl FromRow<'_, SqliteRow> for DocumentMetadata {
             published_title: row
                 .try_get("published_title")
                 .unwrap_or_else(|_| "".to_owned()),
+            publish_date: if let Ok(val) = row.try_get::<NaiveDateTime, &str>("publish_date") {
+                val.to_string()
+            } else {
+                "".to_owned()
+            },
         })
     }
 }
