@@ -117,8 +117,10 @@ async fn main() -> tide::Result<()> {
         app
     };
 
+    app.at("/blog/").serve_file("res/blog-tutorial.html")?;
     let blog = {
         let mut app = tide::with_state(state);
+        app.at("/").serve_file("res/blog-tutorial.html")?;
         app.at("/:author").get(routes::blog::home);
         app.at("/manage")
             .with(WebAuthCheck::new())
