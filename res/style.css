@@ -228,7 +228,7 @@ form {
     margin: 1rem;
 }
 
-form>input,
+input,
 button,
 .button {
     margin: 0.4rem;
@@ -241,6 +241,13 @@ button,
     outline: none;
     font-size: 1rem;
     line-height: 1.2;
+}
+
+input[type=button],
+input[type=submit],
+button,
+.button {
+
     text-align: center;
 }
 
@@ -251,17 +258,17 @@ button,
     text-decoration: none;
 }
 
-form>input:focus:not(:hover),
+input:focus:not(:hover),
 button:focus:not(:hover) {
     border-color: #555555;
 }
 
-form>input[type=submit],
+input[type=submit],
 button {
     cursor: pointer;
 }
 
-form>input[type=submit]:active:not(:hover),
+input[type=submit]:active:not(:hover),
 button:active:not(:hover) {
     border-color: #555555;
 }
@@ -354,19 +361,19 @@ thead {
         background: #404040;
     }
 
-    form>input,
+    input,
     button,
     .button {
         border-color: gray;
     }
 
-    form>input:focus:not(:hover),
+    input:focus:not(:hover),
     button:focus:not(:hover),
     .button:focus:not(:hover) {
         border-color: #f5f4f0;
     }
 
-    form>input[type=submit]:active:not(:hover),
+    input[type=submit]:active:not(:hover),
     button:active:not(:hover),
     .button:active:not(:hover) {
         border-color: #f5f4f0;
