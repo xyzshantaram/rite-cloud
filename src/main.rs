@@ -78,7 +78,6 @@ async fn main() -> tide::Result<()> {
 
         app.at("/link").get(routes::clients::link_get);
         app.at("/view").get(routes::clients::view);
-        app.at("/delete/:uuid").get(routes::clients::delete);
         app.at("/create").post(routes::clients::create);
 
         app
@@ -100,9 +99,6 @@ async fn main() -> tide::Result<()> {
         app.at("/toggle-visibility")
             .with(WebAuthCheck::new())
             .post(routes::docs::toggle_visibility);
-        app.at("/delete")
-            .with(WebAuthCheck::new())
-            .get(routes::docs::delete);
 
         app
     };
