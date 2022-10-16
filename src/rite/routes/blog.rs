@@ -64,7 +64,7 @@ pub async fn manage(req: Request<State>) -> tide::Result {
             .fetch_all(&mut db)
             .await?
             .into_iter()
-            .filter(|doc| !(doc.encrypted.unwrap_or(false)))
+            .filter(|doc| !(doc.encrypted.unwrap_or(false)) && doc.public)
             .collect();
     docs.sort_by_key(|e| e.name.to_lowercase());
 
