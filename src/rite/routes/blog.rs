@@ -63,7 +63,10 @@ pub async fn manage(req: Request<State>) -> tide::Result {
         sqlx::query_as::<Sqlite, DocumentMetadata>("select * from documents where user = ?")
             .bind(&username)
             .fetch_all(&mut db)
-            .await?;
+            .await?
+            .into_iter()
+            .filter(|doc| !(doc.encrypted.unwrap_or(false)))
+            .collect();
     docs.sort_by_key(|e| e.name.to_lowercase());
 
     let grouped = group_revisions_by_doc(docs.as_slice());

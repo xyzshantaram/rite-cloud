@@ -27,7 +27,6 @@
     <li class='rite-document'>
         <strong>{{ name }}</strong>
         {% for revision in revisions %}
-        {% if revision.encrypted %} {% continue %} {% endif %}
         <ul>
             <li>
                 Revision <strong>{{ revision.revision }}</strong>
