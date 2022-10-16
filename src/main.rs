@@ -123,6 +123,12 @@ async fn main() -> tide::Result<()> {
         app.at("/manage")
             .with(WebAuthCheck::new())
             .get(routes::blog::manage);
+        app.at("/publish")
+            .with(WebAuthCheck::new())
+            .post(routes::blog::publish);
+        app.at("/unpublish")
+            .with(WebAuthCheck::new())
+            .post(routes::blog::unpublish);
         app
     };
 

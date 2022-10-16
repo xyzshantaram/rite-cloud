@@ -11,5 +11,5 @@
 - show version or git commit hash on pages
 - distribute neat zip files instead of naked binaries and figure out how to add
   version number to exe name
-- add delete confirmation screen
-- add "convert to blog"
+- add blog features page at /blog
+- combine / otherwise simplify unpublish and publish

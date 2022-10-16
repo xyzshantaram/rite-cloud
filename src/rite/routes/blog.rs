@@ -3,8 +3,9 @@ use crate::{
     State, TERA,
 };
 use http_types::StatusCode;
+use serde::Deserialize;
 use sqlx::Sqlite;
-use tide::Request;
+use tide::{Redirect, Request};
 use tide_tera::{context, TideTeraExt};
 use urlencoding::decode;
 
@@ -55,7 +56,7 @@ pub async fn manage(req: Request<State>) -> tide::Result {
     let tera = TERA.clone();
 
     let session = req.session();
-    let username = session.get::<String>("username");
+    let username = session.get::<String>("username").unwrap();
     let mut db = state.rite_db.acquire().await?;
 
     let mut docs: Vec<DocumentMetadata> =
@@ -74,4 +75,82 @@ pub async fn manage(req: Request<State>) -> tide::Result {
     };
 
     tera.render_response("manage_blog.html", &ctx)
+}
+
+#[derive(Deserialize)]
+pub struct PublishRequest {
+    uuid: String,
+    publish_title: String,
+}
+
+#[derive(Deserialize)]
+pub struct UnpublishRequest {
+    uuid: String,
+}
+
+pub async fn publish(mut req: Request<State>) -> tide::Result {
+    let body: PublishRequest = req.body_form().await?;
+    let session = req.session();
+    let username = session.get::<String>("username").unwrap();
+    let state = req.state();
+    let mut db = state.rite_db.acquire().await?;
+
+    if let Some(val) = sqlx::query_as::<Sqlite, DocumentMetadata>(
+        "select * from documents where user = ? and uuid = ?",
+    )
+    .bind(&username)
+    .bind(body.uuid)
+    .fetch_optional(&mut db)
+    .await?
+    {
+        sqlx::query(
+            "update documents set published_title = ?, publish_date = datetime('now') where user = ? and uuid = ?"
+        )
+            .bind(body.publish_title)    
+            .bind(&username)
+            .bind(val.uuid)
+            .execute(&mut db)
+            .await?;
+    } else {
+        return render_error(
+            &TERA.clone(),
+            "Bad request.",
+            "Invalid uuid supplied.",
+            StatusCode::BadRequest,
+        );
+    };
+    Ok(Redirect::new("/blog/manage").into())
+}
+
+pub async fn unpublish(mut req: Request<State>) -> tide::Result {
+    let body: UnpublishRequest = req.body_form().await?;
+    let session = req.session();
+    let username = session.get::<String>("username").unwrap();
+    let state = req.state();
+    let mut db = state.rite_db.acquire().await?;
+
+    if let Some(val) = sqlx::query_as::<Sqlite, DocumentMetadata>(
+        "select * from documents where user = ? and uuid = ?",
+    )
+    .bind(&username)
+    .bind(body.uuid)
+    .fetch_optional(&mut db)
+    .await?
+    {
+        sqlx::query(
+            "update documents set published_title = NULL, publish_date = NULL where user = ? and uuid = ?"
+        )
+            .bind(&username)
+            .bind(val.uuid)
+            .execute(&mut db)
+            .await?;
+    } else {
+        return render_error(
+            &TERA.clone(),
+            "Bad request.",
+            "Invalid uuid supplied.",
+            StatusCode::BadRequest,
+        );
+    };
+    Ok(Redirect::new("/blog/manage").into())
 }

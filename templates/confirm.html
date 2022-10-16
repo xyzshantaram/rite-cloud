@@ -51,12 +51,17 @@
         doc.name
         }}</strong> on your blog?
 </p>
+{% elif action == "unpublish" %}
+<p>
+    Are you sure you want to unpublish the blog <strong>{{ doc.published_title }}</strong>, published at <time>{{
+        doc.publish_date }}</time>?
+</p>
 {% else %}
 <p>
     Error: Unknown action!
 </p>
 {% endif %}
-{% if action in ["delete", "delete-all", "toggle-vis", "publish"] %}
+{% if action in ["delete", "delete-all", "toggle-vis", "publish", "unpublish"] %}
 <form method="post" action='{% 
         if action=="delete" 
             %}/docs/delete{%
@@ -66,6 +71,8 @@
             %}/docs/toggle-visibility{%
         elif action == "publish"
             %}/blog/publish{%
+        elif action == "unpublish"
+            %}/blog/unpublish{%
         else 
             %}.{%
         endif
@@ -74,14 +81,15 @@
     {% if action == "publish" %}
     <div class="input-group">
         <label for="publish-title">Publish document as: </label>
-        <input type="text" id="publish-title" name="publish-title">
+        <input type="text" id="publish-title" name="publish_title">
     </div>
     {% endif %}
 
     <div class="submit-group">
         <input type="submit" value="OK">
         <span class="button">
-            <a href='{% if action == "publish" %}/blog/manage{% else %}/docs/list{% endif %}'>Cancel</a>
+            <a
+                href='{% if action == "publish" or action == "unpublish" %}/blog/manage{% else %}/docs/list{% endif %}'>Cancel</a>
         </span>
     </div>
     <input type="text" hidden readonly value="{{ doc.uuid }}" name="uuid">
