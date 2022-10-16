@@ -1,9 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+    ul.docs-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media screen and (max-aspect-ratio: 1/1) {
+        ul.docs-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% if docs and docs | length > 0 %}
-<h2>Your documents</h2>
-<p><strong><em>Note: </em></strong> Previewing documents online requires JavaScript.</p>
-<ul>
+<h2>Your blog</h2>
+<p>
+    From this page, you can publish a document to <a href="/blog/{{ username }}">your blog</a>, or unpublish existing
+    posts.
+</p>
+<p>
+    <strong><em>Note: </em></strong> Previewing documents online requires JavaScript.
+</p>
+<ul class="docs-list">
     {% for name, revisions in docs %}
     <li class='rite-document'>
         <strong>{{ name }}</strong>
@@ -17,8 +36,11 @@
                     {% if not revision.published_title %}
                     <a href="/confirm?action=publish&uuid={{ revision.uuid | urlencode_strict }}">Publish</a>
                     {% else %}
-                    Published as <strong>{{ revision.published_title }}</strong>.
-                    <a href="/confirm?action=unpublish&uuid={{ revision.uuid | urlencode_strict }}">Unpublish</a>
+                    <div>
+                        Published as <strong>{{ revision.published_title }}</strong> on <time>{{ revision.publish_date
+                            }}</time>. <a
+                            href="/confirm?action=unpublish&uuid={{ revision.uuid | urlencode_strict }}">Unpublish</a>
+                    </div>
                     {% endif %}
                 </div>
             </li>
