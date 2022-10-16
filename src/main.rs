@@ -79,7 +79,7 @@ async fn main() -> tide::Result<()> {
         app.at("/link").get(routes::clients::link_get);
         app.at("/view").get(routes::clients::view);
         app.at("/create").post(routes::clients::create);
-
+        app.at("/delete/:uuid").get(routes::clients::delete);
         app
     };
 
