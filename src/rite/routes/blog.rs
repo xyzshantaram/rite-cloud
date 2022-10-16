@@ -31,14 +31,6 @@ pub async fn home(req: Request<State>) -> tide::Result {
     .fetch_all(&mut db)
     .await?;
 
-    let ctx = context! {
-        "title" => author.clone() + "'s blog",
-        "section" => author.clone() + "'s blog",
-        "author" => &author,
-        "docs" => docs,
-        "username" => username
-    };
-
     if docs.is_empty() {
         render_error(
             &tera,
@@ -47,6 +39,13 @@ pub async fn home(req: Request<State>) -> tide::Result {
             StatusCode::NotFound,
         )
     } else {
+        let ctx = context! {
+            "title" => author.clone() + "'s blog",
+            "section" => author.clone() + "'s blog",
+            "author" => &author,
+            "docs" => docs,
+            "username" => username
+        };
         tera.render_response("blog.html", &ctx)
     }
 }
