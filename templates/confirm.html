@@ -15,9 +15,18 @@
     form {
         width: 100%;
         display: flex;
-        align-items: flex-end;
         margin-left: 0;
         margin-right: 0;
+    }
+
+    .submit-group {
+        align-self: flex-end;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-group {
+        margin: 1rem;
     }
 </style>
 {% if action == "delete" %}
@@ -36,11 +45,18 @@
     Are you sure you want to make the document <strong>{{ doc.name }}</strong> {% if doc.public %}private{% else
     %}public{% endif %}?
 </p>
+{% elif action == "publish" %}
+<p>
+    Are you sure you want to publish the revision <strong>{{ doc.revision }}</strong> of the document <strong>{{
+        doc.name
+        }}</strong> on your blog?
+</p>
 {% else %}
 <p>
     Error: Unknown action!
 </p>
 {% endif %}
+{% if action in ["delete", "delete-all", "toggle-vis", "publish"] %}
 <form method="post" action='{% 
         if action=="delete" 
             %}/docs/delete{%
@@ -48,12 +64,27 @@
             %}/docs/delete-all{%
         elif action == "toggle-vis"
             %}/docs/toggle-visibility{%
+        elif action == "publish"
+            %}/blog/publish{%
         else 
             %}.{%
         endif
     %}'>
-    <input type="submit" value="Yes">
-    <span class="button"><a href="/docs/list">No, take me back!</a></span>
+
+    {% if action == "publish" %}
+    <div class="input-group">
+        <label for="publish-title">Publish document as: </label>
+        <input type="text" id="publish-title" name="publish-title">
+    </div>
+    {% endif %}
+
+    <div class="submit-group">
+        <input type="submit" value="OK">
+        <span class="button">
+            <a href='{% if action == "publish" %}/blog/manage{% else %}/docs/list{% endif %}'>Cancel</a>
+        </span>
+    </div>
     <input type="text" hidden readonly value="{{ doc.uuid }}" name="uuid">
 </form>
+{% endif %}
 {% endblock content %}
