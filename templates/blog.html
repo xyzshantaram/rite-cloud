@@ -1,4 +1,38 @@
 {% extends "base.html" %}
-{% block content %} 
- {{ content }}
+{% block content %}
+<style>
+    .large {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    time {
+        font-weight: bold;
+    }
+</style>
+<ul>
+    {% for doc in docs %}
+    <li>
+        <a class='large' href="/docs/view/{{ doc.uuid | urlencode_strict }}">{{ doc.published_title }}</a>
+        <div>
+            Published <span><time>{{ doc.publish_date }}</time></span>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<script>
+    window.addEventListener('DOMContentLoaded', (e) => {
+        let toIso8601Date = (str) => {
+            const m = str.match(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+            if (!m) throw new Error("Encountered invalid date.");
+            return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}.000Z`;
+        }
+
+        Array.from(document.querySelectorAll('time')).forEach(elem => {
+            const d = new Date(toIso8601Date(elem.innerHTML));
+            elem.parentElement.innerHTML = `on <time>${d.toDateString()}</time> at <time>${d.toLocaleTimeString()}</time>.`;
+        })
+    })
+</script>
 {% endblock content %}

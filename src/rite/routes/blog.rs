@@ -32,8 +32,8 @@ pub async fn home(req: Request<State>) -> tide::Result {
     .await?;
 
     let ctx = context! {
-        "section" => "blog",
-        "content" => "blog for ".to_owned() + &author,
+        "title" => author.clone() + "'s blog",
+        "section" => author.clone() + "'s blog",
         "author" => &author,
         "docs" => docs,
         "username" => username
