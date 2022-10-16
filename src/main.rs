@@ -158,7 +158,7 @@ async fn build_session_middleware(
     let session_secret = secret;
     Ok(
         SessionMiddleware::new(session_store, session_secret.as_bytes())
-            .with_same_site_policy(SameSite::None),
+            .with_same_site_policy(SameSite::Lax),
     )
 }
 
