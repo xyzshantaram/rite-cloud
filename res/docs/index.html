@@ -67,7 +67,7 @@
     </nav>
 
     <div id="content">
-        <h3>Installing and Basic Usage</h3>
+        <h3 id="basics">Installing and Basic Usage</h3>
         <p>
             To download the latest version of rite, head over to the <a target="_blank"
                 href='https://github.com/xyzshantaram/rite/releases/'>releases</a> page.
@@ -105,7 +105,6 @@
             shortcuts for common operations:
         </p>
 
-
         <p>
             (Note: On macOS, you can substitute <kbd>Ctrl</kbd> with <kbd>Command</kbd> and <kbd>Alt</kbd> with
             <kbd>Option</kbd>.)
@@ -115,6 +114,7 @@
             <li><kbd>Ctrl-S</kbd> Save the current file.</li>
             <li><kbd>Ctrl-O</kbd> Open a file from your local disk.</li>
             <li><kbd>Ctrl-Alt-P</kbd> Open the command palette.</li>
+            <li><kbd>Ctrl-Alt-F</kbd>Toggle focus mode on or off.</li>
             <li><kbd>Ctrl-I</kbd> Make the currently selected text italic.</li>
             <li><kbd>Ctrl-B</kbd> Make the currently selected text bold.</li>
             <li><kbd>Ctrl-Alt-D</kbd> Make the currently selected text struck through.</li>
@@ -131,6 +131,9 @@
             <li><kbd>Ctrl-Shift-H</kbd> Replace all</li>
             <li><kbd>F1</kbd> View help</li>
         </ul>
+
+        <p>Note that you can access this list at any time by using the <code>view_keybinds</code> command from the
+            Command Palette at any time.</p>
 
         <div class='img-wrapper'>
             <img alt='your first heading' src='/help/img/first_heading.png'>
@@ -166,6 +169,20 @@
         </p>
         <div class='img-wrapper'>
             <img alt='a fully customized rite editor' src='/help/img/customized.png'>
+        </div>
+
+        <h3>Focus mode</h3>
+        Focus mode is a rite feature that enables maximum focus by eliminating UI clutter and even most of your own
+        document. It darkens and blurs all parts of the editor except the line you are currently typing. To review a
+        line, simply hover your mouse over it to unblur it.
+
+        <div class="img-wrapper">
+            <img alt="a document with focus mode off" src="/help/img/focus-mode-off.png">
+        </div>
+
+        <div class="img-wrapper">
+            <img alt="the same document with focus mode on. the active line has white text on a black background."
+                src="/help/img/focus-mode-on.png">
         </div>
 
         <h4>Advanced customization options</h4>
@@ -439,6 +456,12 @@
                 <a target="_blank"
                     href='https://scribe.rip/programmers-developers/building-books-with-markdown-using-pandoc-f0d19df7b2ca'>
                     use Pandoc</a> to turn your markdown document into an ePub.
+            </li>
+            <li>
+                Add a table of contents with the <code>toc</code> command. Great for papers and novels!
+                <video height="1040" width="1394">
+                    <source src="/help/img/toc_gen.mp4" type="video/mp4">
+                </video>
             </li>
         </ul>
 
