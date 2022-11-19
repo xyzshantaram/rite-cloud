@@ -179,7 +179,8 @@ kbd {
     margin-top: 0.3rem;
 }
 
-.img-wrapper>img {
+.img-wrapper>img,
+.img-wrapper>video {
     max-height: 60vh;
     max-width: 100%;
     object-fit: contain;
