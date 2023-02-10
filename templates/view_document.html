@@ -167,8 +167,9 @@
                         elt.style.display = "block";
                         window.location = window.location.origin + window.location.pathname + '#' + elt.id;
                     }
-                    else if (elt.tagName === "UL" || elt.tagName === "P" || elt.tagName === "DETAILS") elt.style.display = "block";
+                    else if (["UL", "P", "DETAILS", "PRE"].includes(elt.tagName)) elt.style.display = "block";
                     else if (elt.tagName === "DIV") elt.style.display = "flex";
+
                 })
             }
             let slideIdx = -1;
