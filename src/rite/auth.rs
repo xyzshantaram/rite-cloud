@@ -52,10 +52,23 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
     match token_res {
         Ok(token) => {
             let token_str = token.access_token().secret();
-            let res: GhResponse = surf::get("https://api.github.com/user")
+            let res: GhResponse = match surf::get("https://api.github.com/user")
                 .header("Authorization", format!("token {}", token_str))
                 .recv_json::<GhResponse>()
-                .await?;
+                .await
+            {
+                Err(val) => {
+                    println!("{:#?}", val);
+                    return render_error(
+                        &tera,
+                        "Error communicating with GitHub",
+                        "???",
+                        StatusCode::InternalServerError,
+                    );
+                }
+                Ok(val) => val,
+            };
+
             let session = req.session_mut();
             match session.insert("username", &res.login) {
                 Ok(_) => {
