@@ -98,15 +98,18 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                 ),
             }
         }
-        Err(RequestTokenError::Parse(_, bytes)) => render_error(
-            &tera,
-            "Expired or invalid code while trying to log in",
-            &format!(
-                "error text: {}",
-                string::String::from_utf8(bytes).unwrap_or_default()
-            ),
-            StatusCode::Conflict,
-        ),
+        Err(RequestTokenError::Parse(v, bytes)) => {
+            println!("here4 {:#?}", v);
+            render_error(
+                &tera,
+                "Expired or invalid code while trying to log in",
+                &format!(
+                    "error text: {}",
+                    string::String::from_utf8(bytes).unwrap_or_default()
+                ),
+                StatusCode::Conflict,
+            )
+        }
         Err(otherwise) => render_error(
             &tera,
             "Error while getting access token",
