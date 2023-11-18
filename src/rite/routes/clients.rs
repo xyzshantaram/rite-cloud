@@ -61,7 +61,7 @@ pub async fn delete(req: Request<State>) -> tide::Result {
 
     sqlx::query("delete from clients where user = ? and uuid = ?;")
         .bind(username)
-        .bind(&req.param("uuid")?)
+        .bind(req.param("uuid")?)
         .execute(&mut db)
         .await?;
 

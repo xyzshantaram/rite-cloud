@@ -2,7 +2,7 @@ use std::string;
 
 use http_types::StatusCode;
 use oauth2::basic::BasicClient;
-use oauth2::curl::http_client;
+use oauth2::reqwest::http_client;
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, RequestTokenError,
     Scope, TokenResponse, TokenUrl,
