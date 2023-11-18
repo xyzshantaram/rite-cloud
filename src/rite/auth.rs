@@ -62,7 +62,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
     };
     let code = AuthorizationCode::new(query.code);
     let token_res = client.exchange_code(code).request(http_client);
-    println!("here3");
+    println!("here3 token_res {:#?}", token_res);
     match token_res {
         Ok(token) => {
             println!("here4");
