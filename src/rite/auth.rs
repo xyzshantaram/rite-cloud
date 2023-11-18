@@ -46,7 +46,18 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
     let state = &req.state();
     let client = &state.gh_client;
     let tera = TERA.clone();
-    let query: AuthRequestQuery = req.query()?;
+    let query: AuthRequestQuery = match req.query() {
+        Ok(v) => v,
+        Err(e) => {
+            println!("{:#?}", e);
+            return render_error(
+                &tera,
+                "Error parsing query params",
+                "???",
+                StatusCode::InternalServerError,
+            );
+        }
+    };
     let code = AuthorizationCode::new(query.code);
     let token_res = client.exchange_code(code).request(http_client);
     match token_res {
