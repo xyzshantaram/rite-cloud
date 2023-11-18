@@ -43,9 +43,11 @@ pub async fn gh(req: Request<State>) -> tide::Result {
 }
 
 pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
+    println!("here");
     let state = &req.state();
     let client = &state.gh_client;
     let tera = TERA.clone();
+    println!("here2");
     let query: AuthRequestQuery = match req.query() {
         Ok(v) => v,
         Err(e) => {
@@ -60,8 +62,10 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
     };
     let code = AuthorizationCode::new(query.code);
     let token_res = client.exchange_code(code).request(http_client);
+    println!("here3");
     match token_res {
         Ok(token) => {
+            println!("here4");
             let token_str = token.access_token().secret();
             let res: GhResponse = match surf::get("https://api.github.com/user")
                 .header("Authorization", format!("token {}", token_str))
