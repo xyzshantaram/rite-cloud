@@ -88,7 +88,7 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             }
         }
         Err(RequestTokenError::Parse(v, bytes)) => {
-            println!("here4 {:#?}", v);
+            println!("here4 {}", v);
             render_error(
                 &tera,
                 "Expired or invalid code while trying to log in",
