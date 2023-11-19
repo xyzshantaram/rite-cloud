@@ -36,18 +36,14 @@ pub async fn gh(req: Request<State>) -> tide::Result {
 }
 
 pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
-    println!("here");
     let state = &req.state();
     let client = &state.gh_client;
     let tera = TERA.clone();
-    println!("here2");
     let query: AuthRequestQuery = req.query()?;
     let code = AuthorizationCode::new(query.code);
     let token_res = client.exchange_code(code).request(http_client);
-    println!("here3 token_res {:#?}", token_res);
     match token_res {
         Ok(token) => {
-            println!("here4");
             let token_str = token.access_token().secret();
             let res_text = reqwest::Client::new()
                 .get("https://api.github.com/user")
@@ -60,7 +56,6 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                 .await?
                 .text()
                 .await?;
-            println!("{}", res_text);
             let res: GhResponse = serde_json::from_str(&res_text)?;
 
             let session = req.session_mut();
@@ -77,18 +72,15 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
                 ),
             }
         }
-        Err(RequestTokenError::Parse(v, bytes)) => {
-            println!("here4 {}", v);
-            render_error(
-                &tera,
-                "Expired or invalid code while trying to log in",
-                &format!(
-                    "error text: {}",
-                    string::String::from_utf8(bytes).unwrap_or_default()
-                ),
-                StatusCode::Conflict,
-            )
-        }
+        Err(RequestTokenError::Parse(v, bytes)) => render_error(
+            &tera,
+            "Expired or invalid code while trying to log in",
+            &format!(
+                "error text: {}",
+                string::String::from_utf8(bytes).unwrap_or_default()
+            ),
+            StatusCode::Conflict,
+        ),
         Err(otherwise) => render_error(
             &tera,
             "Error while getting access token",
