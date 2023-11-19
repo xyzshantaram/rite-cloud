@@ -51,8 +51,11 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
             let token_str = token.access_token().secret();
             let res_text = reqwest::Client::new()
                 .get("https://api.github.com/user")
-                .header("Authorization", format!("token {}", token_str))
-                .header("User-Agent", "rite-cloud")
+                .header(
+                    reqwest::header::AUTHORIZATION,
+                    format!("token {}", token_str),
+                )
+                .header(reqwest::header::USER_AGENT, "rite-cloud")
                 .send()
                 .await?
                 .text()
