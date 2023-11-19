@@ -9,13 +9,6 @@ use oauth2::{
 };
 use serde::{Deserialize, Serialize};
 
-/* #[derive(Debug, Deserialize)]
-struct UserInfoResponse {
-    // email: String,
-    id: String,
-    given_name: String,
-} */
-
 #[derive(Debug, Deserialize)]
 struct AuthRequestQuery {
     code: String,
@@ -56,25 +49,15 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
         Ok(token) => {
             println!("here4");
             let token_str = token.access_token().secret();
-            let res = match reqwest::Client::new()
+            let res_text = reqwest::Client::new()
                 .get("https://api.github.com/user")
                 .header("Authorization", format!("token {}", token_str))
                 .send()
                 .await?
-                .json::<GhResponse>()
-                .await
-            {
-                Err(val) => {
-                    println!("{:#?}", val);
-                    return render_error(
-                        &tera,
-                        "Error communicating with GitHub",
-                        "???",
-                        StatusCode::InternalServerError,
-                    );
-                }
-                Ok(val) => val,
-            };
+                .text()
+                .await?;
+            println!("{}", res_text);
+            let res: GhResponse = serde_json::from_str(&res_text)?;
 
             let session = req.session_mut();
             match session.insert("username", &res.login) {
