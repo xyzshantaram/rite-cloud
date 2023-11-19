@@ -56,9 +56,12 @@ pub async fn gh_authorized(mut req: Request<State>) -> tide::Result {
         Ok(token) => {
             println!("here4");
             let token_str = token.access_token().secret();
-            let res: GhResponse = match surf::get("https://api.github.com/user")
+            let res = match reqwest::Client::new()
+                .get("https://api.github.com/user")
                 .header("Authorization", format!("token {}", token_str))
-                .recv_json::<GhResponse>()
+                .send()
+                .await?
+                .json::<GhResponse>()
                 .await
             {
                 Err(val) => {
