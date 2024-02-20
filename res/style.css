@@ -1,7 +1,3 @@
-* {
-    font-display: swap;
-}
-
 html {
     width: 100%;
     height: 100%;
@@ -9,6 +5,7 @@ html {
     padding: 0;
     display: flex;
     justify-content: center;
+    font-display: swap;
 }
 
 .rite-document {
@@ -76,6 +73,7 @@ body {
     line-height: 1.6;
     margin-bottom: 3rem;
     font-size: 1.1rem;
+    font-display: swap;
 }
 
 h1 {
@@ -204,6 +202,23 @@ kbd {
         max-width: 80vw;
         max-height: 60vh;
         padding: auto;
+    }
+
+    #content {
+        padding: 0.5rem;
+    }
+
+    #md-rendered {
+        padding: 0.2rem;
+    }
+
+    blockquote {
+        margin: 0.4rem;
+        margin-left: 0.4rem;
+    }
+
+    ul {
+        padding-inline-start: 0.4rem;
     }
 }
 
