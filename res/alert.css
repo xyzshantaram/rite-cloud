@@ -7,7 +7,8 @@
     overflow: auto;
 }
 
-#alert-header, #alert-footer {
+#alert-header,
+#alert-footer {
     padding: 1rem;
 }
 
@@ -18,7 +19,7 @@
 }
 
 #alert-body {
-    padding-left: 1rem;
+    padding: 1rem;
 }
 
 #alert-footer {
@@ -47,13 +48,16 @@
     border-radius: 0.2rem;
 }
 
-#alert-cancel, #alert-ok {
+#alert-cancel,
+#alert-ok {
     cursor: pointer;
     margin: 0.2rem;
 }
 
 @media not all and (hover: none) {
-    #alert-cancel:hover, #alert-ok:hover {
+
+    #alert-cancel:hover,
+    #alert-ok:hover {
         filter: brightness(1.2);
     }
 }
@@ -61,6 +65,10 @@
 @media only screen and (max-aspect-ratio: 1/1) {
     #cf-alert {
         width: 70%;
+    }
+
+    #alert-body>input {
+        max-width: 15ch;
     }
 }
 
