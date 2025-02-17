@@ -128,7 +128,7 @@
         window.onbeforeprint = () => {
             if (document.body.classList.contains('slideshow-active')) {
                 // Show all slides
-                document.querySelectorAll('h3, ul, p, details, pre, div').forEach(elem => {
+                document.querySelectorAll('h3, ul, p, details, pre, div:not(#md-raw)').forEach(elem => {
                     elem.style.display = 'block';
                 });
 
