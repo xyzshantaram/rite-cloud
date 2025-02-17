@@ -129,7 +129,12 @@
             if (document.body.classList.contains('slideshow-active')) {
                 // Show all slides
                 document.querySelectorAll('h3, ul, p, details, pre, div:not(#md-raw):not(#loading)').forEach(elem => {
-                    elem.style.display = 'block';
+                    if (elem.classList.contains("img-wrapper")) {
+                        elem.style.display = 'flex';
+                    }
+                    else {
+                        elem.style.display = 'block';
+                    }
                 });
 
                 // Force each slide to start on a new page
