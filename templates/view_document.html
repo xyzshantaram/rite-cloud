@@ -126,28 +126,45 @@
         marked.use({ renderer });
 
         window.onbeforeprint = () => {
-            let toHide = [...Array.from(document.querySelectorAll("body>*:not(#content)")), print, rawLink];
-            toHide.forEach(elem => {
-                hidden.push({
-                    e: elem,
-                    d: window.getComputedStyle(elem).display
+            if (document.body.classList.contains('slideshow-active')) {
+                // Show all slides
+                document.querySelectorAll('h3, ul, p, details, pre, div').forEach(elem => {
+                    elem.style.display = 'block';
                 });
-                elem.style.display = 'none';
-            })
-            result.style.borderTopColor = 'transparent';
-            document.body.style.marginTop = '0';
-        }
+
+                // Force each slide to start on a new page
+                document.querySelectorAll('h3').forEach(heading => {
+                    heading.style.pageBreakBefore = 'always';
+                });
+            } else {
+                let toHide = [...document.querySelectorAll("body>*:not(#content)"), print, rawLink, presentLink];
+                toHide.forEach(elem => {
+                    hidden.push({
+                        e: elem,
+                        d: window.getComputedStyle(elem).display
+                    });
+                    elem.style.display = 'none';
+                });
+                result.style.borderTopColor = 'transparent';
+                document.body.style.marginTop = '0';
+            }
+        };
 
         window.onafterprint = () => {
-            let next = null;
-            while (next = hidden.pop()) {
-                next.e.style.display = next.d;
+            if (document.body.classList.contains('slideshow-active')) {
+                present();
+            } else {
+                let next = null;
+                while ((next = hidden.pop())) {
+                    next.e.style.display = next.d;
+                }
+                result.style.borderTopColor = 'gray';
+                document.body.style.marginTop = '5rem';
             }
-            result.style.borderTopColor = 'gray';
-            document.body.style.marginTop = '5rem';
-        }
+        };
 
         const present = () => {
+            document.body.classList.add('slideshow-active');
             const slides = Array.from(document.querySelectorAll('h3')).reduce((l, heading) => {
                 let elt = heading;
                 let children = [];
@@ -169,7 +186,6 @@
                     }
                     else if (["UL", "P", "DETAILS", "PRE"].includes(elt.tagName)) elt.style.display = "block";
                     else if (elt.tagName === "DIV") elt.style.display = "flex";
-
                 })
             }
             let slideIdx = -1;
