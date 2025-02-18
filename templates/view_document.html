@@ -25,22 +25,24 @@
     import alerts from 'https://esm.sh/v99/cf-alert@0.2.1';
     // {% raw %}
     const TABLE_MARKUP = `\
-<div class='table-wrapper'>
-<table>
-<thead>
-{{ header }}
-</thead>
-<tbody>
-{{ body }}
-</tbody>
-</table>
-</div>
-`;
+        <div class='table-wrapper'>
+        <table>
+        <thead>
+        {{ header }}
+        </thead>
+        <tbody>
+        {{ body }}
+        </tbody>
+        </table>
+        </div>
+        `;
     // {% endraw %}
 
     const addCheckBox = (str) => {
         if (/^\s*\[.?\].*$/.test(str)) {
-            return str.replace(/^\[ ?\]/, '<input type="checkbox">').replace(/^\[[^ ]\]/, '<input type="checkbox" checked>')
+            return str
+                .replace(/^\[ ?\]/, '<input type="checkbox">')
+                .replace(/^\[[^ ]\]/, '<input type="checkbox" checked>')
         }
         return str;
     }
@@ -63,7 +65,9 @@
 
         if (raw.getAttribute('data-encrypted') === 'true') {
             try {
-                let passphrase = await alerts.input('password', 'This document is encrypted. Enter the passphrase to decrypt it.');
+                const passphrase = await alerts.input('password',
+                    'This document is encrypted. Enter the passphrase to decrypt it.'
+                );
                 mdContents = AESDecrypt(mdContents, passphrase);
             }
             catch (e) {
@@ -71,9 +75,7 @@
             }
         }
 
-        print.addEventListener('click', () => {
-            window.print();
-        })
+        print.addEventListener('click', () => window.print());
 
         const hidden = [];
         const result = document.createElement("div");
@@ -194,7 +196,7 @@
                         elt.style.display = "block";
                         window.location = window.location.origin + window.location.pathname + '#' + elt.id;
                     }
-                    else if (["UL", "P", "DETAILS", "PRE"].includes(elt.tagName)) elt.style.display = "block";
+                    else if (["UL", "P", "DETAILS", "PRE", "OL"].includes(elt.tagName)) elt.style.display = "block";
                     else if (elt.tagName === "DIV") elt.style.display = "flex";
                 })
             }
@@ -218,7 +220,9 @@
         })
 
         let rendered = marked.parse(mdContents);
-        result.innerHTML = DOMPurify.sanitize(rendered, { FORCE_BODY: true, ADD_TAGS: ['style'] });
+        result.innerHTML = DOMPurify.sanitize(rendered,
+            { FORCE_BODY: true, ADD_TAGS: ['style'] }
+        );
         raw.insertAdjacentElement("afterend", result);
         loading.style.display = 'none';
     })
