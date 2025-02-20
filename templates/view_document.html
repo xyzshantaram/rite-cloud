@@ -196,7 +196,7 @@
                         elt.style.display = "block";
                         window.location = window.location.origin + window.location.pathname + '#' + elt.id;
                     }
-                    else if (["UL", "P", "DETAILS", "PRE", "OL"].includes(elt.tagName)) elt.style.display = "block";
+                    else if (["UL", "P", "DETAILS", "BLOCKQUOTE", "HR", "PRE", "OL", "H4", "H5", "H6"].includes(elt.tagName)) elt.style.display = "block";
                     else if (elt.tagName === "DIV") elt.style.display = "flex";
                 })
             }

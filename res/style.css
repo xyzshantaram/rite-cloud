@@ -358,6 +358,12 @@ thead {
     }
 }
 
+@media print {
+    body.slideshow-active h3 {
+        margin-top: 2rem;
+    }
+}
+
 @media only screen and (prefers-color-scheme: dark) {
     body {
         background: #202020;
