@@ -8,14 +8,13 @@ license = "MIT"
 
 [dependencies]
 tide = "0.16"
-oauth2 = { version = "3.0", features = [ "curl" ] }
+oauth2 = { version = "3.0", features = [ "reqwest-09" ] }
 async-std = { version = "1.9.0", features = ["attributes", "tokio1"] }
 serde = { version = "1.0", features = ["derive"] }
 reqwest = { version = "0.11.22", features = ["json"] }
 http-types = "2.12"
 tera = "1"
 tide-tera = "0.2"
-hyper-native-tls = "0.3"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 sqlx = { version = "0.5", features = ["sqlite", "chrono"] }
 # workaround for tide not having been fixed yet (see https://github.com/http-rs/async-session/issues/24)
