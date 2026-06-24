@@ -1,0 +1,10 @@
+.git
+.github
+.gitignore
+.vscode
+Dockerfile
+.dockerignore
+README.md
+TODO.md
+install-files/
+target/
