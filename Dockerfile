@@ -35,9 +35,4 @@ COPY --from=builder /app/target/release/rite-cloud ./rite-cloud
 COPY templates/ ./templates/
 COPY res/ ./res/
 
-RUN useradd -r -s /bin/false rite
-RUN mkdir -p /data && chown rite:rite /data
-
-USER rite
-
 CMD ["./rite-cloud"]
