@@ -35,4 +35,6 @@ COPY --from=builder /app/target/release/rite-cloud ./rite-cloud
 COPY templates/ ./templates/
 COPY res/ ./res/
 
+EXPOSE 5000
+
 CMD ["./rite-cloud"]
