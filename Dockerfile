@@ -29,11 +29,18 @@ RUN apt-get update && apt-get install -y \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd --gid 10002 riteapp && \
+    useradd --system --uid 10002 --gid 10002 --no-create-home --shell /usr/sbin/nologin riteapp
+
 WORKDIR /app
 
 COPY --from=builder /app/target/release/rite-cloud ./rite-cloud
 COPY templates/ ./templates/
 COPY res/ ./res/
+
+RUN chown -R riteapp:riteapp /app
+
+USER riteapp
 
 EXPOSE 5000
 
